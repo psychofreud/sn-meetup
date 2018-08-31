@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Event" max_length="40" name="x_steas_meetup_con_event" type="collection">
+        <element label="Date" max_length="40" name="date" type="glide_date"/>
+        <element label="Description" max_length="5000" name="description" type="string"/>
+        <element label="Link" max_length="40" name="link" type="string"/>
+        <element label="Meetup" max_length="32" name="meetup" reference="cmn_department" type="reference"/>
+        <element display="true" label="Name" max_length="1000" name="name" type="string"/>
+        <element label="Time" max_length="40" name="time" type="glide_time"/>
+        <index name="index">
+            <element name="meetup"/>
+        </index>
+    </element>
+</database>

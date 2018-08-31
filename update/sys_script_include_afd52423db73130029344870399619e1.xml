@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_steas_meetup_con.MeetupUtils</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>MeetupUtils</name>
+        <script><![CDATA[var MeetupUtils = Class.create();
+MeetupUtils.prototype = {
+	initialize: function() {
+	},
+	
+	getMeetups: function() {
+		var meetupGR = new GlideRecord('cmn_department');
+		meetupGR.query();
+		
+		var arr = [];
+		while (meetupGR.next()) {
+			var meetup = {};
+			meetup.name = meetupGR.name.toString();
+			meetup.id = meetupGR.id.toString();
+			meetup.sig = meetupGR.description.toString();
+			arr.push(meetup);
+		}
+		return arr;
+	},
+	
+	getEvents: function(url) {
+		
+		var sm = new sn_ws.RESTMessageV2();
+		sm.setEndpoint(url);
+		sm.setHttpMethod('GET');
+		
+		sm.setRequestHeader("Accept","application/json");
+		sm.setRequestHeader('Content-Type','application/json');
+		var response = sm.execute();
+		
+		var resp = response.getBody();
+		
+		var json = JSON.parse(resp);
+		for (var i = 0; i < json.length; i++) {
+			var result = json[i];
+			
+			var name = result.name;
+			var desc = result.description;
+			var link = result.link;
+			var local_date = result.local_date;
+			var local_time = result.local_time;
+			this.toImportSet(name, desc, link, local_date, local_time);
+		}
+	},
+	
+	toImportSet :function(name, desc, link, local_date, local_time) {
+		var importSetGR = new GlideRecord('sys_import_set');
+		gs.info(name);
+		// perform here
+	},
+	
+	
+	
+	type: 'MeetupUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-08-14 08:05:38</sys_created_on>
+        <sys_id>afd52423db73130029344870399619e1</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>MeetupUtils</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sys_script_include_afd52423db73130029344870399619e1</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-08-14 08:31:20</sys_updated_on>
+    </sys_script_include>
+</record_update>

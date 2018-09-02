@@ -11,6 +11,13 @@ MeetupUtils.prototype = {
 	initialize: function() {
 	},
 	
+	/*
+	* Example:   var meetups = new MeetupUtils().getMeetups();
+	* Returns all meetups registered in cmn_department
+	* Name: Department.Name
+	* ID: Meetup URL id from API
+	* Sig: Meetup.com group signature
+	*/
 	getMeetups: function() {
 		var meetupGR = new GlideRecord('cmn_department');
 		meetupGR.query();
@@ -26,6 +33,10 @@ MeetupUtils.prototype = {
 		return arr;
 	},
 	
+	/*
+	* Need to fully understand the Meetup API to get the correct URL
+	* and authorization methods
+	*/
 	getEvents: function(url) {
 		
 		var sm = new sn_ws.RESTMessageV2();
@@ -65,13 +76,13 @@ MeetupUtils.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2018-08-14 08:05:38</sys_created_on>
         <sys_id>afd52423db73130029344870399619e1</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>5</sys_mod_count>
         <sys_name>MeetupUtils</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sys_script_include_afd52423db73130029344870399619e1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2018-08-14 08:31:20</sys_updated_on>
+        <sys_updated_on>2018-09-02 20:51:28</sys_updated_on>
     </sys_script_include>
 </record_update>

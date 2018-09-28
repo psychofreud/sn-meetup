@@ -1,18 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_grid_canvas_pane">
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_grid_canvas_pane">
     <sys_grid_canvas_pane action="INSERT_OR_UPDATE">
         <grid_canvas display_value="PA New Tab">f4a01704db00230029344870399619c9</grid_canvas>
         <height>4</height>
-        <portal_widget display_value="Created 2018-08-16 02:47:43">f4a09744db4023002934487039961922</portal_widget>
+        <portal_widget display_value="Created 2018-08-16 11:47:43">f4a09744db4023002934487039961922</portal_widget>
         <posx>4</posx>
         <posy>28</posy>
         <sys_class_name>sys_grid_canvas_pane</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2018-08-16 09:47:43</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>01a09744db4023002934487039961935</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>f4a01704db00230029344870399619c9</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sys_grid_canvas_pane_01a09744db4023002934487039961935</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>

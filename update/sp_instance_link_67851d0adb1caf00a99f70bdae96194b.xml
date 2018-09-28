@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance_link">
+    <sp_instance_link action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>primary</color>
+        <css/>
+        <glyph>maxcdn</glyph>
+        <id/>
+        <kb_article/>
+        <kb_category/>
+        <kb_topic/>
+        <order>1</order>
+        <roles/>
+        <sc_cat_item/>
+        <sc_category/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">879fb4dedb18ef00a99f70bdae9619ba</sp_column>
+        <sp_page/>
+        <sp_widget display_value="MU Icon Link">2108f48edb98af00a99f70bdae9619ff</sp_widget>
+        <sys_class_name>sp_instance_link</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-09-03 16:13:29</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>67851d0adb1caf00a99f70bdae96194b</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>MeetUps</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_instance_link_67851d0adb1caf00a99f70bdae96194b</sys_update_name>
+        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-04 09:50:17</sys_updated_on>
+        <title>MeetUps</title>
+        <type>page</type>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"link_template": {
+		"value": "Top Icon",
+		"displayValue": "Top Icon"
+	},
+	"broadcast_name": {
+		"value": "",
+		"displayValue": ""
+	},
+	"e_widget": {
+		"value": { 'name' : 'widget-simple-list', 'table': 'x_steas_meetup_con_meetup', 'display_field': 'name', 'secondary_fields': 'location', 'title': 'MeetUps' },
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance_link>
+    <sys_translated_text action="delete_multiple" query="documentkey=67851d0adb1caf00a99f70bdae96194b"/>
+</record_update>

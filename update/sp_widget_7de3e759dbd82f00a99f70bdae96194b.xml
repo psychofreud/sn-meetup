@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope,$rootScope,$timeout) {
+
+  var c = this;
+
+  $scope.showWidget = "";
+
+  $rootScope.$on('showHideWidget', function(event,data) {
+
+  $timeout(function(){
+
+            $scope.showWidget = data;
+
+  });
+
+  });
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.each-authorRec{
+
+display:flex;
+
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  border-top:1px solid #ddd;
+  clear:both;
+
+}
+
+.center-div{
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>meetupcontributors</id>
+        <internal>false</internal>
+        <link/>
+        <name>MeetUp Contributors</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+
+	data.contributorsList = [];
+
+	var authorGr = new GlideRecord('kb_knowledge');
+	authorGr.addEncodedQuery('kb_knowledge_base=5e1fd10ddb94eb00a99f70bdae961967');
+	authorGr.query();
+
+	while(authorGr.next()){
+
+		var count = countArticles(authorGr.author);
+		//gs.debug('KB Author : {0}\tCount : {1}', [authorGr.getDisplayValue('author'), count]);
+
+		
+var temp = {};
+
+  temp.author = authorGr.author;
+	temp.contentCount = count;
+console.log('data.contributorsList : ' + data.contributorsList);
+  data.contributorsList.push(temp);
+	}
+
+	function countArticles(author){
+
+		var authorCount = new GlideAggregate('kb_knowledge');
+		authorCount.addQuery('author', author);
+		authorCount.addAggregate('COUNT');
+		authorCount.query();
+		var articles = 0; 
+
+		if(authorCount.next()){
+
+			articles = authorCount.getAggregate('COUNT');
+			return articles;
+		}
+
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-09-01 18:40:36</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>7de3e759dbd82f00a99f70bdae96194b</sys_id>
+        <sys_mod_count>18</sys_mod_count>
+        <sys_name>MeetUp Contributors</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_7de3e759dbd82f00a99f70bdae96194b</sys_update_name>
+        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-01 19:43:10</sys_updated_on>
+        <template><![CDATA[<div ng-if="showWidget == 'meetUpContributors'">
+
+<div class="container">
+
+  <div class="col-md-10 center-div">
+
+  <h3 style="display:inline-block;float:left;">Contribitors</h3>
+
+ <div ng-repeat="articles in data.contributorsList | limitTo:5" class="each-authorRec">
+
+      <h4>{{contributorsList.contentCount}}</h4>
+
+      <p style="margin-bottom:0px;">{{contributorsList.contentCount}}</p>
+
+  </div>  
+
+</div>
+
+</div>
+  ]]></template>
+    </sp_widget>
+</record_update>

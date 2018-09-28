@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element extends="kb_knowledge" label="Content" max_length="40" name="x_steas_meetup_con_content" type="collection">
+        <element label="Meetup event" max_length="32" name="meetup_event" reference="x_steas_meetup_con_event" type="reference"/>
+        <index name="index">
+            <element name="meetup_event"/>
+        </index>
+    </element>
+</database>

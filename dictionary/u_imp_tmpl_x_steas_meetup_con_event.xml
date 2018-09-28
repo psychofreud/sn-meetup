@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element extends="sys_import_set_row" label="Imp Tmpl X Steas Meetup Con Event" max_length="40" name="u_imp_tmpl_x_steas_meetup_con_event" type="collection">
+        <element attributes="import_attribute_name=Date" label="Date" max_length="40" name="u_date" type="glide_date"/>
+        <element attributes="import_attribute_name=Description,edge_encryption_enabled=true" label="Description" max_length="5000" name="u_description" type="string"/>
+        <element attributes="import_attribute_name=Link,edge_encryption_enabled=true" label="Link" max_length="40" name="u_link" type="string"/>
+        <element attributes="import_attribute_name=Meetup,edge_encryption_enabled=true" label="Meetup" max_length="32" name="u_meetup" type="string"/>
+        <element attributes="import_attribute_name=Name,edge_encryption_enabled=true" label="Name" max_length="1000" name="u_name" type="string"/>
+        <element attributes="import_attribute_name=Time,edge_encryption_enabled=true" label="Time" max_length="40" name="u_time" type="string"/>
+    </element>
+</database>

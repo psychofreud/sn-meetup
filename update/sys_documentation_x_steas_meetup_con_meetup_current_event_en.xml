@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update>
+    <sys_documentation element="current_event" label="Current event" language="en" table="x_steas_meetup_con_meetup">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>current_event</element>
+            <help/>
+            <hint/>
+            <label>Current event</label>
+            <language>en</language>
+            <name>x_steas_meetup_con_meetup</name>
+            <plural>Current events</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
+            <sys_created_on>2018-09-27 19:21:17</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_id>ecb6a93ddbb06b80b45b7cfeaf96195f</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Current event</sys_name>
+            <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+            <sys_update_name>sys_documentation_x_steas_meetup_con_meetup_current_event_en</sys_update_name>
+            <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
+            <sys_updated_on>2018-09-27 19:21:17</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

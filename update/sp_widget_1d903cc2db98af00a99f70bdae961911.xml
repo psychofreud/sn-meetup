@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $location, spUtil) {
+  /* widget controller */
+  var c = this;
+	var currentButton;
+	c.fetching = false;
+	c.optionSelected = function(dt) {
+		if(currentButton == dt) {
+			return;
+		}
+		currentButton = dt;
+		c.data.button = currentButton;
+		c.data.action = 'button_changed';
+		c.fetching = true;
+		console.log('currentButton: ' + JSON.stringify(currentButton));
+		c.server.update().then(function(response) {
+			c.data.action = '';
+			c.data.button = null;
+			c.fetching = false;
+		});
+		
+	};
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.iconlink a label,h2 {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.1;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+/* TOP ICON ---------- */
+
+a.top_icon {
+  display: block;
+  padding: 20px;
+  text-align: center;
+}
+
+a.top_icon .fa {
+  display: block;
+  text-align: center;
+}
+
+/* CIRCLE ICON ---------- */
+
+a.circle_icon {
+  display: block;
+  padding: 20px 0px 20px 70px;
+  position: relative;
+}
+
+a.circle_icon .fa {
+  position:absolute;
+  left: 0px;
+  top: 10px;
+}
+
+/* COLOR BOX ---------- */
+
+a.color_box {
+  display: block;
+  position: relative;
+  padding: 20px 20px 20px 82px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+a.color_box .fa {
+  position:absolute;
+  left: 20px;
+  top: 20px;
+  width:42px;
+  text-align: center;
+}
+
+.icon-link-background-primary {
+  background-color: $brand-primary;
+}
+
+.icon-link-background-info {
+  background-color: $brand-info;
+}
+
+.icon-link-background-success {
+  background-color: $brand-success;
+}
+
+.icon-link-background-warning {
+  background-color: $brand-warning;
+}
+
+.icon-link-background-danger {
+  background-color: $brand-danger;
+}
+
+.icon-link-background-default {
+  background-color: $brand-primary;
+}
+
+.text-primary {
+  color: $brand-primary;
+  
+  &amp;:hover {
+    color: darken($brand-primary, 20%);
+  }
+}
+
+.text-info {
+  color: $brand-info;
+  
+  &amp;:hover {
+    color: darken($brand-info, 20%);
+  }
+}
+
+.text-success {
+  color: $brand-success;
+  
+  &amp;:hover {
+    color: darken($brand-success, 20%);
+  }
+}
+
+.text-warning {
+  color: $brand-warning;
+  
+  &amp;:hover {
+    color: darken($brand-warning, 20%);
+  }
+}
+
+.text-danger {
+  color: $brand-danger;
+  
+  &amp;:hover {
+    color: darken($brand-danger, 20%);
+  }
+}
+
+.text-default {
+  color: $brand-primary;
+  
+  &amp;:hover {
+    color: darken($brand-primary, 20%);
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>mu_icon_group</id>
+        <internal>false</internal>
+        <link/>
+        <name>MU Icon group</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var colLength = 12;
+	var widgetName;
+	var widgetParam;
+	
+	if(input && input.action == 'button_changed') {
+		widgetName = input.button.widget_name;
+		widgetParam = input.button.widget_param;
+		data.eWidget = getWidget(widgetName, widgetParam);
+		return;
+	}
+	
+	data.buttons = [
+		{
+			'title' : 'First Title',
+			'link_template' : 'Top Icon',
+			'class_name' : 'test',
+			'broadcast_name' : 'first_title',
+			'glyph' : 'star',
+			'text_color' : 'primary',
+			'short_description' : 'short_descriptionn #1',
+			'widget_name' : 'widget-simple-list',
+			'widget_param' : {
+				'table': 'incident',
+				'display_field': 'number',
+				'secondary_fields': 'short_description',
+				'title': gs.getMessage('Incidents')
+			}
+		}, 
+		{
+			'title' : 'Second Title',
+			'link_template' : 'Top Icon',
+			'class_name' : 'test',
+			'broadcast_name' : 'second_title',
+			'glyph' : 'star',
+			'text_color' : 'primary',
+			'short_description' : 'short_description #2',
+			'widget_name' : 'widget-simple-list',
+			'widget_param' : {
+				'table': 'sys_user',
+				'display_field': 'number',
+				'secondary_fields': 'name',
+				'title': gs.getMessage('Users')
+			}
+		}
+	];
+
+	var btnLength = data.buttons.length;
+	data.col_size = (btnLength > 0 ? colLength / btnLength : colLength);
+	if(!input) {
+		widgetName = data.buttons[0].widget_name;
+		widgetParam = data.buttons[0].widget_param;
+		data.eWidget = getWidget(widgetName, widgetParam);
+	}
+	
+	/** Functions **/
+	
+	function getWidget(widgetName, widgetParams) {
+		
+		return $sp.getWidget(widgetName, widgetParams);
+	}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-09-03 13:31:58</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>1d903cc2db98af00a99f70bdae961911</sys_id>
+        <sys_mod_count>18</sys_mod_count>
+        <sys_name>MU Icon group</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_1d903cc2db98af00a99f70bdae961911</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-03 17:44:27</sys_updated_on>
+        <template><![CDATA[<div class="iconlink">
+  <div class="row">
+    <div class="col-sm-{{::c.data.col_size}} col-md-{{::c.data.col_size}} col-xs-{{::c.data.col_size}}" ng-repeat="button in c.data.buttons">
+      
+      <!--// Top Icon -->
+      <a ng-if="::(button.link_template == 'Top Icon' || !button.link_template)" class="top_icon {{::button.class_name}}" id="{{button.broadcast_name}}-tab" href="#" ng-click="c.optionSelected(button)">
+        <div class="m-b fa fa-{{button.glyph}} fa-4x {{button.class_name}} text-{{button.text_color}}"></div>
+        <h2>{{button.title}}</h2>
+        <span class="text-muted">{{button.short_description}}</span>
+      </a>
+      <!--// Circle Icon -->
+      <a ng-if="::(button.link_template == 'Circle Icon')" class="circle_icon {{button.class_name}} text-{{button.text_color}} nav-link {{::button.active}}" id="{{button.broadcast_name}}-tab" data-toggle="pill" href="#{{button.broadcast_name}}" role="tab" aria-controls="{{button.broadcast_name}}" aria-selected="{{::button.selected}}">
+        <span class="fa fa-stack fa-2x">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-{{button.glyph}} fa-stack-1x fa-inverse"></i>
+        </span>
+        <h2>{{button.title}}</h2>
+        <span class="text-muted">{{button.short_description}}</span>
+      </a>
+      
+      <!--// Color Box -->
+      <a ng-if="::(button.link_template == 'Color Box')" class="color_box {{button.class_name}} icon-link-background-{{button.text_color}} text-white nav-link {{::button.active}}" id="{{button.broadcast_name}}-tab" data-toggle="pill" href="#{{button.broadcast_name}}" role="tab" aria-controls="{{button.broadcast_name}}" aria-selected="{{::button.selected}}">
+        <div class="fa fa-{{button.glyph}} fa-3x {{button.class_name}}"></div>
+        <h2>{{button.title}}</h2>
+        <span>{{button.short_description}}</span>
+      </a>
+    </div>
+  </div>
+  
+  <div class="row" ng-if="!c.fetching">
+    <div class="col-sm-12 col-md-12 col-xs-12">
+      <sp-widget ng-if="data.eWidget" widget="data.eWidget"></sp-widget>
+    </div>
+  </div>
+  
+</div>]]></template>
+    </sp_widget>
+</record_update>

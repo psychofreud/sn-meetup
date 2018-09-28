@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($rootScope,$scope,$timeout) {
+
+	var c = this;
+  
+}
+
+
+
+/*
+function($scope,$rootScope,$timeout,$sce) {
+  
+  var c = this;
+	c.debug = false;
+	
+  $scope.showWidget = "";
+  $rootScope.$on('showHideWidget', function(event,data) {
+ 
+  $timeout(function(){
+  $scope.showWidget = data;
+  });
+  });
+}
+*/]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/*
+.pill-background {
+
+  background: #ffffff no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+  background-size: cover;
+  height: 300;
+  display: flex;
+
+  align-items: center;
+  justify-content: space-around;
+
+  .each-pill {
+
+    &amp;.active {
+
+      color: #324b4a;
+
+    }
+
+     margin-top:50px;
+    margin-bottom: 50px;
+    
+    height:75px;
+    width:100px;
+    background:#ffffff;
+    padding:20px;
+    text-align:center;
+    border-radius:4px;
+    cursor:pointer;
+
+    p{
+      margin-top:5px;
+    }
+  }
+}
+
+.color-red {
+  color: #c70000;
+
+}
+.remove-margin {
+  margin-bottom: 0px;
+}
+*/
+iconlink a label,h2 {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.1;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+/* TOP ICON ---------- */
+
+a.top_icon {
+  display: block;
+  padding: 20px;
+  text-align: center;
+}
+
+a.top_icon .fa {
+  display: block;
+  text-align: center;
+}
+
+/* CIRCLE ICON ---------- */
+
+a.circle_icon {
+  display: block;
+  padding: 20px 0px 20px 70px;
+  position: relative;
+}
+
+a.circle_icon .fa {
+  position:absolute;
+  left: 0px;
+  top: 10px;
+}
+
+/* COLOR BOX ---------- */
+
+a.color_box {
+  display: block;
+  position: relative;
+  padding: 20px 20px 20px 82px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+a.color_box .fa {
+  position:absolute;
+  left: 20px;
+  top: 20px;
+  width:42px;
+  text-align: center;
+}
+
+.icon-link-background-primary {
+  background-color: $brand-primary;
+}
+
+.icon-link-background-info {
+  background-color: $brand-info;
+}
+
+.icon-link-background-success {
+  background-color: $brand-success;
+}
+
+.icon-link-background-warning {
+  background-color: $brand-warning;
+}
+
+.icon-link-background-danger {
+  background-color: $brand-danger;
+}
+
+.icon-link-background-default {
+  background-color: $brand-primary;
+}
+
+.text-primary {
+  color: $brand-primary;
+  
+  &amp;:hover {
+    color: darken($brand-primary, 20%);
+  }
+}
+
+.text-info {
+  color: $brand-info;
+  
+  &amp;:hover {
+    color: darken($brand-info, 20%);
+  }
+}
+
+.text-success {
+  color: $brand-success;
+  
+  &amp;:hover {
+    color: darken($brand-success, 20%);
+  }
+}
+
+.text-warning {
+  color: $brand-warning;
+  
+  &amp;:hover {
+    color: darken($brand-warning, 20%);
+  }
+}
+
+.text-danger {
+  color: $brand-danger;
+  
+  &amp;:hover {
+    color: darken($brand-danger, 20%);
+  }
+}
+
+.text-default {
+  color: $brand-primary;
+  
+  &amp;:hover {
+    color: darken($brand-primary, 20%);
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>meetup-icon-parent</id>
+        <internal>false</internal>
+        <link/>
+        <name>Meetup Icon Parent</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+ 
+	data.buttons = [
+		{
+			'title' : 'MeetUps',
+			'link_template' : 'Top Icon',
+			'active' : 'active',
+			'selected' : true,
+			'class_name' : 'test',
+			'broadcast_name' : 'first_title',
+			'glyph' : 'fa fa-meetup',
+			'text_color' : 'primary',
+			'short_description' : 'short_descriptionn #1'
+		}, 
+		{
+			'title' : 'Content',
+			'link_template' : 'Top Icon',
+			'selected' : 'false',
+			'class_name' : 'test',
+			'broadcast_name' : 'second_title',
+			'glyph' : 'fa fa-meetup',
+			'text_color' : 'primary',
+			'short_description' : 'short_description #2'
+		},
+			{
+			'title' : 'Contributors',
+			'link_template' : 'Top Icon',
+			'selected' : 'false',
+			'class_name' : 'test',
+			'broadcast_name' : 'third_title',
+			'glyph' : 'fa fa-users',
+			'text_color' : 'primary',
+			'short_description' : 'short_description #3'
+		},
+		{
+			'title' : 'Events',
+			'link_template' : 'Top Icon',
+			'selected' : 'false',
+			'class_name' : 'test',
+			'broadcast_name' : 'forth_title',
+			'glyph' : 'fa fa-calendar',
+			'text_color' : 'primary',
+			'short_description' : 'short_description #4'
+		}
+	];
+	var colLength = 12;
+	var btnLength = data.buttons.length;
+	data.col_size = (btnLength > 0 ? colLength / btnLength : colLength);
+	
+	
+	/*
+	var departmentOptions = {
+		'table' : 'cmn_department',
+		'sp_page' :'meetup_content_landing'
+	};
+	data.meetupDepartments = $sp.getWidget('widget-simple-list', departmentOptions);
+	
+	var contentOptions = {
+		table: 'kb_knowledge',
+		filter: 'kb_knowledge_base=5e1fd10ddb94eb00a99f70bdae961967' // Look into changing this filter.
+	};
+	data.meetupContent = $sp.getWidget('widget-simple-list', contentOptions);
+	
+	var contributorsOptions = {
+		table: 'kb_knowledge'
+	};
+	data.meetupContributors = $sp.getWidget('widget-simple-list', contributorsOptions);
+	
+	var eventsOptions = {
+		table: 'x_steas_meetup_con_event'	
+	};
+	data.meetupEvents = $sp.getWidget('widget-data-table', eventsOptions);
+	*/
+	
+})();
+
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-08-31 18:42:47</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>56f996cddb58eb00a99f70bdae961918</sys_id>
+        <sys_mod_count>115</sys_mod_count>
+        <sys_name>Meetup Icon Parent</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_56f996cddb58eb00a99f70bdae961918</sys_update_name>
+        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-03 11:37:07</sys_updated_on>
+        <template><![CDATA[<div class="iconlink">
+  <div class="row">
+    <div class="col-sm-{{::c.data.col_size}} col-md-{{::c.data.col_size}}">
+      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" ng-repeat="button in c.data.buttons">
+          <!--// Top Icon -->
+          <a ng-if="::(button.link_template == 'Top Icon' || !button.link_template)" class="top_icon {{::button.class_name}} nav-link {{::button.active}}" id="{{button.broadcast_name}}-tab" data-toggle="pill" href="#{{button.broadcast_name}}" role="tab" aria-controls="{{button.broadcast_name}}" aria-selected="{{::button.selected}}">
+            <div class="m-b fa fa-{{button.glyph}} fa-4x {{button.class_name}} text-{{button.text_color}}"></div>
+            <h2>{{button.title}}</h2>
+            <span class="text-muted">{{button.short_description}}</span>
+          </a>
+          <!--// Circle Icon -->
+          <a ng-if="::(button.link_template == 'Circle Icon')" class="circle_icon {{button.class_name}} text-{{button.text_color}} nav-link {{::button.active}}" id="{{button.broadcast_name}}-tab" data-toggle="pill" href="#{{button.broadcast_name}}" role="tab" aria-controls="{{button.broadcast_name}}" aria-selected="{{::button.selected}}">
+            <span class="fa fa-stack fa-2x">
+              <i class="fa fa-circle fa-stack-2x"></i>
+              <i class="fa fa-{{button.glyph}} fa-stack-1x fa-inverse"></i>
+            </span>
+            <h2>{{button.title}}</h2>
+            <span class="text-muted">{{button.short_description}}</span>
+          </a>
+          
+          <!--// Color Box -->
+          <a ng-if="::(button.link_template == 'Color Box')" class="color_box {{button.class_name}} icon-link-background-{{button.text_color}} text-white nav-link {{::button.active}}" id="{{button.broadcast_name}}-tab" data-toggle="pill" href="#{{button.broadcast_name}}" role="tab" aria-controls="{{button.broadcast_name}}" aria-selected="{{::button.selected}}">
+            <div class="fa fa-{{button.glyph}} fa-3x {{button.class_name}}"></div>
+            <h2>{{button.title}}</h2>
+            <span>{{button.short_description}}</span>
+          </a>
+      
+      </ul>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="tab-content" id="pills-tabContent">
+      <div ng-repeat="button in c.data.buttons">
+        <div class="tab-pane fade show {{::button.active}}" id="{{button.broadcast_name}}" role="tabpanel" aria-labelledby="{{button.broadcast_name}}-tab">{{button.short_description}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<!--
+<div>
+  <div class=" pill-background row">
+      <div class="each-pill" ng-class="{'active':c.selectedPill == 'meetUps'}" ng-click="selectPill('requests')">
+            <i class="fa fa-meetup" aria-hidden="true"></i>
+              <p class="remove-margin">MeetUps</p>
+      </div>
+      
+    <div class="each-pill" ng-class="{'active':c.selectedPill == 'create'}" ng-click="selectPill('create')">    
+          <i class="fa fa-book" aria-hidden="true"></i>
+          <p class="remove-margin">Content</p>
+      </div>
+
+      <div class="each-pill" ng-class="{'active':c.selectedPill == 'meetUpContributors'}" ng-click="selectPill('contact')">
+          <i class="fa fa-users"   aria-hidden="true"></i>
+          <p class="remove-margin">Contributors</p>
+      </div>
+
+     <div class="each-pill" ng-class="{'active':c.selectedPill == 'contact'}" ng-click="selectPill('contact')">
+          <i class="fa fa-calendar"   aria-hidden="true"></i>
+          <p class="remove-margin">Events</p>
+      </div>
+  </div>
+</div>
+-->]]></template>
+    </sp_widget>
+</record_update>

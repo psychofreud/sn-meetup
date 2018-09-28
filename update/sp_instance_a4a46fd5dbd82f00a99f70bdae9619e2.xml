@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">0d94a399dbd82f00a99f70bdae961934</sp_column>
+        <sp_widget display_value="MeetUp Contributors">7de3e759dbd82f00a99f70bdae96194b</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-09-01 18:43:10</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>a4a46fd5dbd82f00a99f70bdae9619e2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_instance_a4a46fd5dbd82f00a99f70bdae9619e2</sys_update_name>
+        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-01 18:43:10</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=a4a46fd5dbd82f00a99f70bdae9619e2"/>
+</record_update>

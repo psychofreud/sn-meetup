@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $timeout) {
+  /* widget controller */
+  var c = this;
+	c.fetching = false;
+	var currentData;
+	//Broadcasting Listening Widget
+	$scope.$on("mu_icon_trigger", function(event, data) {
+		
+		currentData = data;
+		c.data.e_widget = currentData.e_widget;
+		c.data.action = 'widget_changed';
+		c.fetching = true;
+		console.log('currentData: ' + JSON.stringify(currentData));
+		c.server.update().then(function(response) {
+			c.data.action = '';
+			c.data.e_widget = null;
+			c.fetching = false;
+		});
+		console.log("[mu_icon_trigger DATA]::: " + JSON.stringify(data));
+		
+	});
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>mu_e_widget</id>
+        <internal>false</internal>
+        <link/>
+        <name>MU E Widget</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	if(input && input.e_widget && input.action == 'widget_changed') {
+		var eWidget = input.e_widget;
+		data.eWidget = getWidget(eWidget.name, eWidget);
+		console.log('data.eWidget: ' + data.eWidget);
+	}
+	
+	function getWidget(widgetName, widgetParams) {
+		return $sp.getWidget(widgetName, widgetParams);
+	}
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-09-03 17:10:19</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>3782298adb1caf00a99f70bdae96190f</sys_id>
+        <sys_mod_count>22</sys_mod_count>
+        <sys_name>MU E Widget</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_3782298adb1caf00a99f70bdae96190f</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-09-15 12:15:04</sys_updated_on>
+        <template><![CDATA[<div>
+<!-- your widget template -->
+  <div class="row" ng-if="!c.fetching">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <sp-widget ng-if="data.eWidget" widget="data.eWidget"></sp-widget>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

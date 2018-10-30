@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[function($scope, spUtil, $location, spModal, spAriaUtil, $http, $window) {
@@ -62,13 +61,11 @@
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-15 17:35:42</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
         <sys_id>f47b9735db2ceb40a99f70bdae9619ca</sys_id>
         <sys_mod_count>22</sys_mod_count>
         <sys_name>Create Content</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_widget_f47b9735db2ceb40a99f70bdae9619ca</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>

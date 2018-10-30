@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database>
+<?xml version="1.0" encoding="UTF-8"?><database>
     <element label="Meetup event" max_length="40" name="x_steas_meetup_con_event" type="collection">
         <element label="Article" max_length="4000" name="article" reference="kb_knowledge" type="glide_list"/>
         <element label="Date" max_length="40" name="date" type="glide_date"/>

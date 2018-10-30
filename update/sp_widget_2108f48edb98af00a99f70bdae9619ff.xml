@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[function($scope, $rootScope, $timeout, spUtil) {
@@ -25,8 +24,11 @@
   font-size: 2.5rem;
   font-weight: 300;
   line-height: 1.1;
-  padding: 0;
   margin: 0 0 10px 0;
+  height: 125px;
+  padding: 10px 15px 10px 15px;
+  overflow-y: hidden;
+  border-color: #ddd;
 }
 
 /* TOP ICON ---------- */
@@ -144,13 +146,63 @@ a.color_box .fa {
   &amp;:hover {
     color: darken($brand-primary, 20%);
   }
-}</css>
+}
+
+.forum-tile {
+  height: 125px;
+  padding: 10px 15px 10px 15px;
+  margin-bottom: 20px;
+  overflow-y: hidden;
+  font-family: "Roboto", "SourceSansPro", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+  -webkit-transition-duration: 0.1s; /* Safari */
+  transition-duration: 0.1s;
+}
+
+.link-image {
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  margin-top: 10px;
+  color: #243839;
+}
+
+.forum-tile .link-text p {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: normal;
+}
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    margin: 0 0 10px;
+}
+
+.link-text {
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  text-color: #243839;
+  color: #243839;
+  
+}
+
+a:hover {
+  text-decoration: underline;
+}
+</css>
         <data_table>sp_instance_link</data_table>
         <demo_data/>
         <description/>
         <docs/>
         <field_list>title,widget_parameters,color,glyph,short_description,class_name,sys_class_name</field_list>
-        <has_preview>false</has_preview>
+        <has_preview>true</has_preview>
         <id>mu-icon-link</id>
         <internal>false</internal>
         <link/>
@@ -167,26 +219,24 @@ a.color_box .fa {
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-03 14:04:28</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
         <sys_id>2108f48edb98af00a99f70bdae9619ff</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>108</sys_mod_count>
         <sys_name>MU Icon Link</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_widget_2108f48edb98af00a99f70bdae9619ff</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-09-04 07:13:11</sys_updated_on>
-        <template><![CDATA[<div class="iconlink">
-  <!--// Top Icon -->
+        <sys_updated_on>2018-10-30 12:39:31</sys_updated_on>
+        <template><![CDATA[<!--div class="iconlink">
+  
   <a ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" class="top_icon {{::options.class_name}}" ng-click="c.optionSelected()">
     <div class="m-b fa fa-{{::options.glyph}} fa-4x {{::options.class_name}} text-{{::options.color}}"></div>
     <h2>{{::options.title}}</h2>
     <span class="text-muted">{{::options.short_description}}</span>
   </a>
 
-  <!--// Circle Icon -->
+
   <a ng-if="::(options.link_template == 'Circle Icon')" class="circle_icon {{::options.class_name}} text-{{::options.color}}" ng-click="c.optionSelected()">
     <span class="fa fa-stack fa-2x">
       <i class="fa fa-circle fa-stack-2x"></i>
@@ -196,12 +246,26 @@ a.color_box .fa {
     <span class="text-muted">{{::options.short_description}}</span>
   </a>
 
-  <!--// Color Box -->
+
   <a ng-if="::(options.link_template == 'Color Box')" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" ng-click="c.optionSelected()">
     <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
     <h2>{{::options.title}}</h2>
     <span>{{::options.short_description}}</span>
   </a>
+</div -->
+
+<div class="panel panel-default forum-tile">
+  <a class="csm-link-inverse" ng-click="c.optionSelected()">
+    <div class="link-image">
+      <span class="fa fa-{{::options.glyph}} fa-4x"></span>
+    </div>
+    <div class="link-text">
+      <p>
+        {{::options.title}}
+      </p>
+    </div>
+  </a>
+  
 </div>]]></template>
     </sp_widget>
 </record_update>

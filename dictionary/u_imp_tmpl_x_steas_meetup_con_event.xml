@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database>
+<?xml version="1.0" encoding="UTF-8"?><database>
     <element extends="sys_import_set_row" label="Imp Tmpl X Steas Meetup Con Event" max_length="40" name="u_imp_tmpl_x_steas_meetup_con_event" type="collection">
         <element attributes="import_attribute_name=Date" label="Date" max_length="40" name="u_date" type="glide_date"/>
         <element attributes="import_attribute_name=Description,edge_encryption_enabled=true" label="Description" max_length="5000" name="u_description" type="string"/>

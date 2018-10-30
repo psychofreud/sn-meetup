@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_rel_widget_clone">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_rel_widget_clone">
     <sp_rel_widget_clone action="INSERT_OR_UPDATE">
         <child display_value="MU Catalog Item">1330b41adbac2f40a99f70bdae961903</child>
         <cloned>2018-09-16 18:24:39</cloned>
@@ -403,13 +402,11 @@
         <sys_class_name>sp_rel_widget_clone</sys_class_name>
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-16 18:24:39</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
         <sys_id>a330b49adbac2f40a99f70bdae96194d</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>1330b41adbac2f40a99f70bdae961903</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_rel_widget_clone_a330b49adbac2f40a99f70bdae96194d</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="item_option_new">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="item_option_new">
     <item_option_new action="INSERT_OR_UPDATE">
         <active>true</active>
         <attributes/>
@@ -23,17 +22,17 @@
         <global>false</global>
         <help_tag>More information</help_tag>
         <help_text/>
-        <include_none>false</include_none>
+        <include_none>true</include_none>
         <instructions/>
         <layout>normal</layout>
         <list_table/>
-        <lookup_label/>
+        <lookup_label>name,date,group</lookup_label>
         <lookup_price/>
-        <lookup_table/>
+        <lookup_table>x_snc_dev_meet_meetup</lookup_table>
         <lookup_unique>false</lookup_unique>
-        <lookup_value/>
+        <lookup_value>name</lookup_value>
         <macro/>
-        <mandatory>true</mandatory>
+        <mandatory>false</mandatory>
         <map_to_field>true</map_to_field>
         <mask_use_confirmation>false</mask_use_confirmation>
         <mask_use_encryption>false</mask_use_encryption>
@@ -41,13 +40,13 @@
         <order>20</order>
         <price_if_checked>0</price_if_checked>
         <pricing_implications>false</pricing_implications>
-        <question_text>MeetUp</question_text>
+        <question_text>Meetup event</question_text>
         <read_roles/>
         <rec_lookup_price/>
         <rec_price_if_checked>0</rec_price_if_checked>
         <record/>
         <record_producer_table>x_steas_meetup_con_content</record_producer_table>
-        <reference>x_steas_meetup_con_event</reference>
+        <reference>x_snc_dev_meet_meetup</reference>
         <reference_qual/>
         <reference_qual_condition/>
         <scale_max>5</scale_max>
@@ -59,23 +58,21 @@
         <sys_class_name>item_option_new</sys_class_name>
         <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-11 19:13:41</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
         <sys_id>f63bc320db68e740a99f70bdae9619e9</sys_id>
-        <sys_mod_count>3</sys_mod_count>
-        <sys_name>MeetUp</sys_name>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Meetup event</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>item_option_new_f63bc320db68e740a99f70bdae9619e9</sys_update_name>
-        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-09-27 20:15:57</sys_updated_on>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-10-27 14:29:11</sys_updated_on>
         <table/>
         <tooltip/>
-        <type>8</type>
+        <type>18</type>
         <ui_page/>
         <use_dynamic_default>false</use_dynamic_default>
-        <use_reference_qualifier>simple</use_reference_qualifier>
+        <use_reference_qualifier>advanced</use_reference_qualifier>
         <variable_name/>
         <variable_set/>
         <variable_width/>

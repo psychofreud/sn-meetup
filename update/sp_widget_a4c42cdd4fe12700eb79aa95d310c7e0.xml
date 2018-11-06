@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $location, $rootScope, spUtil, $interpolate) {
+	var c = this;
+	c.DEBUG = false;
+	data.keywords = "";
+	this.showFilter = false;
+
+	this.onClick = function($event, item, url, action) {
+		$event.stopPropagation();
+		$event.preventDefault();
+		if (typeof url == "string") {
+			var urlExp = $interpolate(url);
+			url = urlExp(item);
+			$location.url(url);
+		} else if (url && typeof url == "object")
+			$location.search(url);
+		else {
+			var evt = {};
+			evt.url = url;
+			evt.table = item.className;
+			evt.sys_id = item.sys_id;
+			evt.record = item;
+			evt.rectangle_id = c.options.sys_id;
+			evt.action = action;
+			// put out the selection with simple list "sl_" prefix
+			$location.search('sl_sys_id', evt.sys_id);
+			$location.search('sl_table', evt.table);
+			$location.search('spa', 1); // spa means "I've got this"
+			$rootScope.$broadcast('$sp.list.click', evt);
+		}
+	};
+
+	if (c.options.table)
+		spUtil.recordWatch($scope, c.options.table, c.options.filter);
+
+	this.getMaxShownLabel = function(maxEntries, totalCount) {
+		if (totalCount == c.data.maxCount)
+			return "${First [0] of more than [1]}".replace('[0]', maxEntries).replace('[1]', totalCount);
+
+		return "${First [0] of [1]}".replace('[0]', maxEntries).replace('[1]', totalCount);
+	};
+
+	this.seeAllPage = c.options.list_page_dv || 'list';
+	this.targetPageID = (c.options.sp_page) ? "&target_page_id=" + c.options.sp_page : "";
+
+	c.getMaxHeight = function() {
+		return c.options.panel_body_height || 'none';
+	};
+	
+	c.getActionColor = function(action) {
+		return "text-" + action.color;
+	};
+
+	c.update = function update() {
+			c.server.update();
+	}
+
+	c.toggleFilter = function() {
+		c.showFilter = !c.showFilter;
+	}
+	
+	$scope.setSearch = function() {
+		console.log('[setSearch]');
+		c.openItem = null;
+		$scope.data.p = 1;
+		getData();
+	}
+	
+	function getData() {
+		c.data.options = c.options;
+		c.server.update().then(function(response) {
+			
+		});
+		/*
+		spUtil.update($scope).then(function(data) {
+			
+		});
+		*/
+	}
+	
+	$scope.getNumber = function(num) {
+		return new Array(num);
+	}
+
+	$scope.mathMin = function(v1,v2) {
+		return Math.min(v1,v2);
+	}
+	
+	$scope.setPageNum = function(num) {
+		$scope.data.p = num;
+		c.openItem = null;
+		getData();
+		$timeout(function() {
+			$scope.focusOnTableHeader();
+		});
+	}
+	
+	$scope.select = function($event, item, url, action) {
+		if(c.options.item_widget && c.options.item_widget.name) {
+			if(c.openItem == item) {
+				c.openItem = null;
+				return;
+			}
+			renderItemWidget(item);
+			
+		} else {
+			c.onClick($event, item, url, action);
+		}
+	}
+	
+	function renderItemWidget(item) {
+		c.itemWidget = null;
+		var item_widget = c.options.item_widget;
+		var widgetOptions = item_widget.options ? item_widget.options : {};
+		if(item_widget.option_name && item_widget.option_value) {
+			widgetOptions[item_widget.option_name] = item[item_widget.option_value];
+		}
+		
+		console.log('[widgetOptions]: ' + JSON.stringify(widgetOptions));
+		spUtil.get(item_widget.name, widgetOptions).then(function(response) {
+			c.itemWidget = response;
+			c.openItem = item;
+		});
+	}
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.disabled-filter {
+	color: #A0A0A0;
+}
+
+.list-group-item.ng-enter {
+  transition: all 1s;
+  -webkit-transition: all 1s;
+
+  background-color: #c0dcfa;
+}
+
+.list-group-item.ng-enter-active {
+  background-color: #fff;
+}
+
+.hide-x-overflow {
+  overflow-x: hidden;
+}
+
+.translated-html &gt; p {
+  margin: 0px;
+  padding: 0px;
+}
+
+IMG {
+  max-width: 320px;
+  max-height: 240px;
+}
+
+IMG.img-sm {
+  max-height: 40px;
+  max-width: 40px;
+}
+
+.filter-box {
+  margin-top: 10px;
+}
+
+.panel-footer {
+  .number-shown-label {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 16px;
+    display: inline-block;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+.item-widget {
+  background-color: #f5f5f5;
+  padding: 10px;
+  @include border-top-radius($panel-border-radius);
+  @include border-bottom-radius($panel-border-radius);
+}</css>
+        <data_table>sp_instance_vlist</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>table,filter,maximum_entries,display_field,color,size,glyph,sp_page</field_list>
+        <has_preview>false</has_preview>
+        <id>mu-simple-list</id>
+        <internal>false</internal>
+        <link/>
+        <name>MU Simple List</name>
+        <option_schema>[{"name":"always_show","section":"Behavior","label":"Show even when empty","type":"boolean"},{"name":"panel_body_height","section":"Presentation","label":"List body height","type":"string"},{"name":"image_field","section":"Presentation","label":"Image field","type":"field_name"},{"name":"secondary_fields","section":"Data","label":"Secondary fields","type":"field_list"},{"name":"rounded_images","section":"Presentation","label":"Rounded images","type":"boolean"},{"displayValue":"Page","name":"list_page","section":"Data","label":"List page","type":"reference","value":"sp_page","ed":{"reference":"sp_page"}},{"name":"hide_footer","section":"Presentation","label":"Hide Footer","type":"boolean"},{"displayValue":"UI View","hint":"View to use when target page is a form","name":"view","section":"Behavior","label":"View","type":"reference","value":"sys_ui_view","ed":{"reference":"sys_ui_view"}}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function () {
+	data.filterMsg = gs.getMessage("Filter...");
+	if(input && input.options) {
+		options = input.options;
+	}
+
+	data.hide_footer = data.hide_footer || options.hide_footer;
+	data.table = data.table || options.table || $sp.getParameter('t');
+	data.filter = data.filter || options.filter;
+	data.title = data.title || options.title;
+	data.display_field = data.display_field || options.display_field || $sp.getParameter('f');
+	data.secondary_fields = data.secondary_fields || options.secondary_fields || "";
+	data.secondary_fields = data.secondary_fields.split(",");
+	data.order_by = data.order_by || options.order_by;
+	data.list_page = data.list_page || options.list_page;
+	data.order_direction = data.order_direction || options.order_direction;
+	data.maximum_entries = data.maximum_entries || options.maximum_entries;
+	data.image_field = data.image_field || options.image_field;
+	data.sp_page = data.sp_page || options.sp_page;
+	data.view = data.view || options.view;
+	data.url = data.url || options.url;
+	if(gs.nil(data.hide_footer))
+	    data.hide_footer = false;
+    data.hide_footer = (data.hide_footer == "true" || data.hide_footer == true);
+	if (!data.table)
+		return;
+
+	data.p = (input && input.p ? input.p : 1);
+	data.p = parseInt(data.p);
+	data.page_index = data.p - 1;
+	
+	var windowSize = data.window_size || $sp.getValue('maximum_entries') || options.maximum_entries || 20;
+	windowSize = parseInt(windowSize);
+	if(isNaN(windowSize) || windowSize < 1) {
+		windowSize = 20;
+	}
+	data.window_size = windowSize;
+	
+	var gr = new GlideRecordSecure(data.table); // does ACL checking for us
+	if(!gr.isValid()) {
+		data.isValid = false;
+		return;
+	} else
+		data.isValid = true;
+	// grTemp is used to check isValidField since using GlideRecordSecure fails for date/time fields
+	var grTemp = new GlideRecord(data.table);
+	gr.addEncodedQuery(data.filter);
+	data.title = data.title || gr.getPlural();
+	if (!data.display_field || !grTemp.isValidField(data.display_field))
+		data.display_field = gr.getDisplayName();
+	
+	if (input && input.keywords) {
+		gr.addEncodedQuery(data.display_field + "LIKE" + input.keywords);
+	}
+
+	data.title = data.title || gr.getPlural();
+	if (!data.order_by || !grTemp.isValidField(data.order_by))
+		data.order_by = data.display_field;
+
+	// Set ID of sp_page from option schema
+	if (data.list_page) {
+		var sp_page = GlideRecord('sp_page');
+		if (sp_page.get(data.list_page))
+			data.list_page_dv = sp_page.getDisplayValue('id');
+	}
+
+	// redo query with limit
+	if (data.order_direction == "asc")
+		gr.orderBy(data.order_by);
+	else
+		gr.orderByDesc(data.order_by);
+
+	//data.maxCount = 500;
+	//gr.setLimit(data.maxCount);
+	data.window_start = data.page_index * data.window_size;
+	data.window_end = (data.page_index + 1) * data.window_size;
+	gr.chooseWindow(data.window_start, data.window_end);
+	gr.query();
+
+	data.row_count = gr.getRowCount();
+	data.num_pages = Math.ceil(data.row_count / data.window_size);
+	
+	data.count = gr.getRowCount();
+	data.actions = getActions();
+	data.list = [];
+	var recordIdx = 0;
+	while (gr.next()) {
+		if (data.maximum_entries && recordIdx == data.maximum_entries)
+			break;
+
+		var record = {};
+		if (data.actions.length > 0) {
+			var fields = gr.getFields();
+			for (var i = 0; i < fields.size(); i++) {
+				var glideElement = fields.get(i);
+				var name = glideElement.getName();
+				if (name.indexOf("sys_") == -1)
+					record[name] = gr.getValue(name);
+			}
+		}
+
+		record.sys_id = gr.getValue('sys_id');
+		record.className = gr.getRecordClassName();
+		if (data.image_field) {
+			record.image_field = gr.getDisplayValue(data.image_field);
+			if (!record.image_field)
+				record.image_field = "noimage.pngx";
+		}
+
+		if (data.display_field)
+			record.display_field = getField(gr, data.display_field);
+
+		record.secondary_fields = [];
+		data.secondary_fields.forEach(function(f) {
+			record.secondary_fields.push(getField(gr, f));
+		});
+
+		if (data.sp_page) {
+			var view = "sp";
+			if (data.view) {
+				var viewGR = new GlideRecord("sys_ui_view");
+				viewGR.get(data.view);
+				view = viewGR.getValue("name");
+			}
+			record.url = {id: data.sp_page, table: record.className, sys_id: record.sys_id, view: view};
+		} else if (data.url != '')
+			record.url = data.url;
+		else
+			record.url = null;
+
+		data.list.push(record);
+		recordIdx++;
+	}
+
+	function getField(gr, name) {
+		var f = {};
+		f.display_value = gr.getDisplayValue(name);
+		f.value = gr.getValue(name);
+		var ge = gr.getElement(name);
+			if (ge == null)
+				return f;
+
+		f.type = ge.getED().getInternalType()
+		f.label = ge.getLabel();
+		return f;
+	}
+
+	function getActions() {
+		var rl = new GlideRecord("sp_vlist_action");
+		rl.addQuery("sp_rectangle_vlist",$sp.getValue("sys_id"));
+		rl.query();
+		var actions = [];
+		while(rl.next()) {
+			var action = {};
+			$sp.getRecordValues(action, rl, "name,glyph,hint,url,color");
+			actions.push(action);
+		}
+		return actions;
+	}
+})()]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-11-02 08:03:20</sys_created_on>
+        <sys_id>a4c42cdd4fe12700eb79aa95d310c7e0</sys_id>
+        <sys_mod_count>58</sys_mod_count>
+        <sys_name>MU Simple List</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_a4c42cdd4fe12700eb79aa95d310c7e0</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-03 21:16:17</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b" ><!-- ng-if="c.data.isValid && (c.options.always_show || c.data.filterText || c.data.list.length)" -->
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h2 class="h4 panel-title">
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h2>
+    <!-- <i class="fa fa-filter" ng-click="c.toggleFilter()" ng-class="{'disabled-filter': !c.showFilter}"></i> -->
+    <div>
+      <input aria-label="${Filter}" ng-model="data.keywords" ng-model-options="{debounce: 200}" placeholder="{{::data.filterMsg}}" ng-change="setSearch()" class="form-control input-sm filter-box">
+    </div>
+  </div>
+  <ul class="list-group hide-x-overflow" ng-style="::{maxHeight: c.getMaxHeight()}" style="overflow-y: auto;">
+    <li ng-if="c.data.list.length > 0" ng-repeat="item in c.data.list track by item.sys_id" class="list-group-item">
+      <a class="focus-inline-block" ng-click="select($event, item, item.url, {})" href="javascript:void(0)" >
+        <span ng-repeat="action in c.data.actions" href="" ng-click="c.onClick($event, item, action.url, action)" ng-if="action.glyph"
+              class="list-action l-h-40 pull-right">
+          <fa name="{{action.glyph}}" ng-class="c.getActionColor(action)" />
+        </span>
+        <span ng-if="c.options.image_field" class="pull-left m-r"
+              ng-class="{'avatar': c.options.rounded_images, 'thumb-sm': c.options.rounded_images}">
+          <img ng-src="{{item.image_field}}" alt="..." class="img-sm" ng-class="{'img-circle': c.options.rounded_images}">
+        </span>
+        <div>
+          <div ng-switch on="item.display_field.type" ng-class="{'l-h-40': !item.secondary_fields.length}">
+            <span class="translated-html" ng-switch-when="translated_html" ng-bind-html="item.display_field.value"></span>
+            <div ng-switch-default>{{item.display_field.display_value}}</div>
+          </div>
+          <small class="text-muted" ng-repeat="f in item.secondary_fields">
+            <span ng-if="!$first"> • </span>
+            <span ng-switch="f.type" title="{{::f.label}}">
+              <span ng-switch-when="glide_date"><sn-time-ago timestamp="::f.value" /></span>
+              <span ng-switch-when="glide_date_time"><sn-time-ago timestamp="::f.value" /></span>
+              <span ng-switch-default="">{{f.display_value}}</span>
+            </span>
+          </small>
+        </div>
+      </a>
+      <div class="item-widget" ng-if="c.openItem && c.openItem.sys_id == item.sys_id">
+        <sp-widget ng-if="c.itemWidget" widget="c.itemWidget"></sp-widget>
+      </div>
+    </li>
+     <div ng-if="c.data.list.length <= 0" class="list-group-item">
+     ${No records found}
+    </div>
+  </ul>
+  <div class="panel-footer">
+    <div class="btn-toolbar m-r pull-left">
+      <div class="btn-group">
+        <a ng-disabled="data.p == 1" href="javascript:void(0)" ng-click="setPageNum(data.p - 1)" class="btn btn-default" aria-label="${Previous page}"><i class="fa fa-chevron-left"></i></a>
+      </div>
+      <div ng-if="data.num_pages > 1 && data.num_pages < 20" class="btn-group">
+        <a ng-repeat="i in getNumber(data.num_pages) track by $index" ng-click="setPageNum($index + 1)" href="javascript:void(0)" ng-class="{active: ($index + 1) == data.p}" type="button" class="btn btn-default" aria-label="${Page} {{$index + 1}}">{{$index + 1}}</a>
+      </div>
+      <div class="btn-group">
+        <a ng-disabled="data.p == data.num_pages" href="javascript:void(0)" ng-click="setPageNum(data.p + 1)" class="btn btn-default" aria-label="${Next page}"><i class="fa fa-chevron-right"></i></a>
+      </div>
+    </div>
+    <div class="m-t-xs panel-title">${Rows {{data.window_start + 1}} - {{ mathMin(data.window_end,data.row_count) }} of {{data.row_count}}}</div>
+    
+    <span class="clearfix"></span>
+  </div>
+</div>
+
+<div class="row" ng-if="c.DEBUG==true">
+  <div class="col-sm-12">
+    <div class="well sm-well">
+      <b></b><code>{{}}</code><br/>
+      <b>data.keywords</b><code>{{data.keywords}}</code><br/>
+      <b>c.options</b><code>{{options}}</code><br/>
+      <b>c.openItem</b><code>{{c.openItem}}</code><br/>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

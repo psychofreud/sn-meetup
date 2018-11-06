@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
+        <sp_angular_provider display_value="spAttachmentManager">06e836f0d722120023c84f80de6103a1</sp_angular_provider>
+        <sp_widget display_value="MU Article Page">657672694f256700eb79aa95d310c7bc</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-11-03 13:18:24</sys_created_on>
+        <sys_id>a57672694f256700eb79aa95d310c7be</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>spAttachmentManager.MU Article Page</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_a57672694f256700eb79aa95d310c7be</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-03 13:18:24</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+</record_update>

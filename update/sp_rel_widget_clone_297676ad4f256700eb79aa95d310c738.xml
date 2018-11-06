@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_rel_widget_clone">
+    <sp_rel_widget_clone action="INSERT_OR_UPDATE">
+        <child display_value="MU Article Page">657672694f256700eb79aa95d310c7bc</child>
+        <cloned>2018-11-03 13:18:24</cloned>
+        <last_validated>2018-11-03 13:18:24</last_validated>
+        <parent display_value="KB Article Page">c6545050ff223100ba13ffffffffffe8</parent>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;sp_widget&gt;&lt;category&gt;kb&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function ($scope, spUtil, $sce, $rootScope, $timeout) {
+	spUtil.setSearchPage('kb');
+	$scope.data.text = $sce.trustAsHtml($scope.data.text);
+	$timeout(function() {
+		$rootScope.$broadcast('sp.update.breadcrumbs', $scope.data.breadcrumbs);
+	});
+}]]&gt;&lt;/client_script&gt;&lt;controller_as/&gt;&lt;css&gt;td {
+	padding: .5em;
+  	line-height: 1em;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list&gt;color&lt;/field_list&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link/&gt;&lt;name&gt;KB Article Page&lt;/name&gt;&lt;option_schema&gt;[{"name":"show_star_rating","default_value":"Use system properties","section":"Presentation","label":"Show star rating","type":"choice","choices":[{"label":"Yes","value":"Yes"},{"label":"No","value":"No"},{"label":"Use system properties","value":"Use system properties"}]}]&lt;/option_schema&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[var t = data;
+data.kb_knowledge_page = $sp.getDisplayValue("kb_knowledge_page") || "kb_view";
+var articleGR = GlideRecord("kb_knowledge");
+articleGR.get($sp.getParameter('sys_id'));
+var recordIsValid = articleGR.isValidRecord();
+var canReadArticle = articleGR.canRead();
+t.isvalid = recordIsValid &amp;&amp; canReadArticle;
+
+if (canReadArticle) {
+	articleGR.incrementViewCount(); // update sys_view_count immediately on kb_knowledge record
+	var art = new GlideRecord("kb_use");
+	if (art.isValid()) {
+		art.article = articleGR.getUniqueValue();
+		art.user = gs.getUserID();
+		art.viewed = true;
+		art.insert(); // kb_use records are aggregated to update sys_view_count nightly
+		$sp.logStat('KB Article View', "kb_knowledge", articleGR.getUniqueValue(), articleGR.short_description);
+	}
+
+	t.category = articleGR.getValue('kb_category');
+	t.sys_id = $sp.getParameter('sys_id');
+	t.showAttachments = false;
+	if (articleGR.display_attachments)
+		t.showAttachments = true;
+	t.categoryDisplay = articleGR.getDisplayValue('kb_category');
+	t.short_description = articleGR.getValue('short_description');
+	if (articleGR.getValue('article_type') == 'wiki')
+		t.text = GlideWikiModel().render(articleGR.getValue('wiki'));
+	else { 
+		if(new GlidePluginManager().isActive('com.snc.knowledge_blocks'))
+			t.text = new KBBlock().getArticleContent(articleGR);
+		else
+			t.text = articleGR.getValue('text');
+	} 
+	
+	t.sys_view_count = articleGR.getDisplayValue('sys_view_count');
+	t.author = articleGR.getDisplayValue('author');
+	t.publishedUtc = articleGR.getValue('published');
+	t.number = articleGR.getValue('number');
+	if (showStarRating())
+		t.rating = articleGR.getValue('rating');
+	t.direct = false;
+	if (articleGR.direct)
+		t.direct = true;
+
+	t.breadcrumbs = [{label: t.short_description, url: '#'}];
+	if (!articleGR.kb_category.nil()) {
+		var rec = articleGR.kb_category.getRefRecord();
+		while (rec.getRecordClassName() == "kb_category") {
+			t.breadcrumbs.unshift({label: rec.getDisplayValue(), url: '?id=kb_category&amp;kb_category=' + rec.getUniqueValue()});
+			rec = rec.parent_id.getRefRecord();
+		}
+	}
+	t.breadcrumbs.unshift({label: gs.getMessage("Knowledge Base"), url: '?id=' + t.kb_knowledge_page});
+}
+		
+function showStarRating() {
+	if (options.show_star_rating == "Yes")
+		return true;
+
+	if (options.show_star_rating == "No")
+		return false;
+
+	// check gating property for all rating options
+	if (gs.getProperty("glide.knowman.show_rating_options", "true") != "true")
+		return false;
+
+	// does user have the right role?
+	if (!gs.hasRole(gs.getProperty("glide.knowman.show_rating_options.roles")))
+		return false;
+
+	// check specific property for stars
+	if (gs.getProperty("glide.knowman.show_star_rating", "true") != "true")
+		return false;
+
+	// does user have the right role?
+	return gs.hasRole(gs.getProperty("glide.knowman.show_star_rating.roles"));
+}]]&gt;&lt;/script&gt;&lt;servicenow&gt;true&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2015-02-26 00:05:40&lt;/sys_created_on&gt;&lt;sys_id&gt;c6545050ff223100ba13ffffffffffe8&lt;/sys_id&gt;&lt;sys_mod_count&gt;197&lt;/sys_mod_count&gt;&lt;sys_name&gt;KB Article Page&lt;/sys_name&gt;&lt;sys_package display_value="Service Portal - Knowledge Base (do not activate...see plugin description)" source="com.glide.service-portal.knowledge-base"&gt;e566376181d31300aadba4a47c598eb2&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_c6545050ff223100ba13ffffffffffe8&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-05-10 11:06:06&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div ng-if="data.isvalid" class="panel panel-{{options.color}} b"&gt;
+
+  &lt;div class="panel-heading"&gt;
+      &lt;h2 class="panel-title h4"&gt;
+          &lt;span class="pull-left"&gt;{{::data.short_description}}&lt;/span&gt;&amp;nbsp;
+          &lt;span class="pull-right"&gt;{{::data.number}}&lt;/span&gt;
+      &lt;/h2&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel-body m-b-lg wrapper-lg"&gt;
+
+    &lt;div class="row m-b-lg b-b"&gt;
+        &lt;span class="author pad-right" ng-if="data.author"&gt;
+          &lt;glyph sn-char="user" class="pad-right" /&gt;
+          ${Authored by {{::data.author}}}
+        &lt;/span&gt;
+        &lt;span ng-if="data.sys_view_count == 1" class="views pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="eye-open" class="pad-right" /&gt;
+          ${{{::data.sys_view_count}} View}
+        &lt;/span&gt;
+        &lt;span ng-if="data.sys_view_count &gt; 1" class="views pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="eye-open" class="pad-right" /&gt;
+          ${{{::data.sys_view_count}} Views}
+        &lt;/span&gt;
+        &lt;span class="published pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="calendar" class="pad-right" /&gt;
+          &lt;sn-day-ago date="data.publishedUtc"/&gt;
+        &lt;/span&gt;
+        &lt;span ng-if="data.rating &gt; 0 &amp;&amp; !data.direct" title="{{::data.rating}} rating"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;uib-rating ng-model="::data.rating" max="5" readonly="true" aria-label="${Article rating} - ${Read Only}"/&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div ng-if="!data.direct" class="kb_article" ng-bind-html="::data.text" style="overflow-x:auto;"&gt;&lt;/div&gt;
+
+    &lt;h4 ng-if="data.direct"&gt;
+      ${View or download the attachments below}
+    &lt;/h4&gt;
+    &lt;div ng-if="::data.showAttachments || data.direct" class="b-t m-t"&gt;
+      &lt;sp-attachment-manager table="'kb_knowledge'" sys-id="::data.sys_id" omit-edit="true"&gt;&lt;/sp-attachment-manager&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div ng-if="!data.isvalid"&gt;
+  ${Article not found}
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;</payload>
+        <sys_class_name>sp_rel_widget_clone</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-11-03 13:18:24</sys_created_on>
+        <sys_id>297676ad4f256700eb79aa95d310c738</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>657672694f256700eb79aa95d310c7bc</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_rel_widget_clone_297676ad4f256700eb79aa95d310c738</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-03 13:18:24</sys_updated_on>
+    </sp_rel_widget_clone>
+</record_update>

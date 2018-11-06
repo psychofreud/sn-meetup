@@ -6,14 +6,66 @@
   var c = this;
 	c.DEBUG = false;
 	
+	spUtil.recordWatch($scope, 'kb_knowledge', '', function(name, data) {
+		getData(true);
+	});
+	
 	c.onKBClick = function(kbItem) {
 		console.log('kbItem: ' + JSON.stringify(kbItem));
 	}
+	
+	$scope.setSearch = function(updateUrl) {
+		$scope.data.p = 1;
+		getData(updateUrl);
+	}
+	
+	function getData(updateUrl) {
+		var f = $scope.data;
+		spUtil.update($scope).then(function(data) {
+			/*
+			f.view = data.view;
+			if ($scope.options.fromUrl && updateUrl)
+				setPermalink(f.table, f.filter, f.o, f.d, f.p);
+
+			if ($scope.options.show_breadcrumbs && data.filterBreadcrumbs)
+				$scope.$broadcast('widget-filter-breadcrumbs.setBreadcrumbs', data.filterBreadcrumbs.data, data.filter);
+
+			initRecordWatcher(f.table, f.filter);
+			*/
+		});
+	}
+	
+	$scope.getNumber = function(num) {
+		return new Array(num);
+	}
+
+	$scope.mathMin = function(v1,v2) {
+		return Math.min(v1,v2);
+	}
+	
+	$scope.setPageNum = function(num) {
+		$scope.data.p = num;
+		getData(true);
+		$timeout(function() {
+			$scope.focusOnTableHeader();
+		});
+	}
+	
 }]]></client_script>
         <controller_as>c</controller_as>
         <css>.v-align {
   display: inline-block;
   padding-top: 8px;
+}
+
+.panel-heading {
+  padding-left: 8px;
+}
+
+.panel-title {
+  vertical-align: middle;
+  margin-top: 8px;
+  margin-left: 10px;
 }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -32,9 +84,32 @@
   /* populate the 'data' object */
   /* e.g., data.table = $sp.getValue('table'); */
 	kbURL = "sp?id=kb_article&sys_id=";
-	data.kb_fields = ['kb_category','short_description'];
-	data.user_fields = ['first_name', 'last_name', 'name'];
+	data.keywords = (input && input.keywords ? input.keywords : null);
+	data.p = (input && input.p ? input.p : 1);
+	data.p = parseInt(data.p);
+	data.page_index = data.p - 1;
+	
+	var windowSize = data.window_size || $sp.getValue('maximum_entries') || 20;
+	windowSize = parseInt(windowSize);
+	if(isNaN(windowSize) || windowSize < 1) {
+		windowSize = 20;
+	}
+	data.window_size = windowSize;
+	
+	data.child_fields = ['kb_category','short_description'];
+	data.parent_fields = ['first_name', 'last_name', 'name'];
 	data.contributorList = getArticles();
+	console.log('data.keywords: ' + data.keywords);
+	data.keywords = null;
+	
+	/*
+	var breadcrumbWidgetParams = {
+		table: 'kb_knowledge',
+		query: data.filter,
+		enable_filter: true
+	};
+	data.filterBreadcrumbs = $sp.getWidget('widget-filter-breadcrumbs', breadcrumbWidgetParams);
+	*/
 	
 	function getArticles() {
 		var kbBaseGr = getKnowledgeBaseWithTitle('MeetUp');
@@ -45,13 +120,27 @@
 		if(kbBaseGr) {
 			aggAuthor.addQuery('kb_knowledge_base', kbBaseGr.sys_id);
 		}
+		
+		if (data.keywords){
+			aggAuthor.addQuery('123TEXTQUERY321', data.keywords);
+		}
+		
 		aggAuthor.groupBy('author');
+		
+		data.window_start = data.page_index * data.window_size;
+		data.window_end = (data.page_index + 1) * data.window_size;
+		aggAuthor.chooseWindow(data.window_start, data.window_end);
+		
 		aggAuthor.query();
+		
+		data.row_count = aggAuthor.getRowCount();
+		data.num_pages = Math.ceil(data.row_count / data.window_size);
+		
 		while(aggAuthor.next()) {
 			var contributor = {};
 			var userGr = new GlideRecord('sys_user');
 			userGr.get(aggAuthor.author);
-			$sp.getRecordValues(contributor, userGr, data.user_fields);
+			$sp.getRecordValues(contributor, userGr, data.parent_fields);
 			contributor.sys_id = userGr.sys_id + '';
 			
 			var kbGr = new GlideRecord('x_steas_meetup_con_content');
@@ -60,16 +149,22 @@
 			if(kbBaseGr) {
 				kbGr.addQuery('kb_knowledge_base', kbBaseGr.sys_id);
 			}
+			
+			if (data.keywords) {
+				kbGr.addQuery('123TEXTQUERY321', data.keywords);
+				data.filter = kbGr.getEncodedQuery();
+			}
+			
 			kbGr.query();
 			if(!data.kb_labels || data.kb_labels.length <= 0) {
-				data.kb_labels = $sp.getFields(kbGr, data.kb_fields);
+				data.kb_labels = $sp.getFields(kbGr, data.child_fields);
 			}
 			contributor.count = kbGr.getRowCount();
 			contributor.kb_list = [];
 			while(kbGr.next()) {
 				var knowledge = {};
-				//$sp.getRecordValues(knowledge, kbGr, data.kb_fields);
-				$sp.getRecordDisplayValues(knowledge, kbGr, data.kb_fields);
+				//$sp.getRecordValues(knowledge, kbGr, data.child_fields);
+				$sp.getRecordDisplayValues(knowledge, kbGr, data.child_fields);
 				knowledge.sys_id = kbGr.sys_id + '';
 				knowledge.url = kbURL + kbGr.sys_id;
 				contributor.kb_list.push(knowledge);
@@ -100,19 +195,31 @@
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-27 13:20:43</sys_created_on>
         <sys_id>e62410f1dbb82b80a99f70bdae96192a</sys_id>
-        <sys_mod_count>149</sys_mod_count>
+        <sys_mod_count>193</sys_mod_count>
         <sys_name>MU Contributor Table</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_widget_e62410f1dbb82b80a99f70bdae96192a</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-10-29 16:26:23</sys_updated_on>
-        <template><![CDATA[<div class="panel">
-  <div class="panel-heading panel-title">
-    {{::c.options.title}}
+        <sys_updated_on>2018-11-03 21:17:34</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-success b">
+  <div class="panel-heading form-inline">
+    <span class="panel-title">{{::c.options.title}}Title</span>
+    <div class="pull-right">
+      <form ng-submit="setSearch(true)">
+        <div class="input-group">
+          <input type="text" name="datatable-search" ng-model="data.keywords" ng-model-options="{debounce:250}" class="form-control" placeholder="${Keyword Search}">
+          <span class="input-group-btn">
+            <button name="search" class="btn btn-default" type="submit" aria-label="${Search}"><span class="glyphicon glyphicon-search"></span></button>
+          </span>
+        </div>
+      </form>
+    </div>
+    <div class="clearfix"></div>
   </div>
   
+  <!-- Group List -->
   <div class="panel-group" id="accordion">
     <div class="panel panel-default" ng-repeat="item in data.contributorList track by item['sys_id']">
       <div class="panel-heading">
@@ -144,7 +251,7 @@
             </thead>
             <tbody class="tbody">
               <tr ng-repeat="kb_item in item.kb_list track by kb_item['sys_id']">
-                <td ng-repeat="field in data.kb_fields">
+                <td ng-repeat="field in data.child_fields">
                   <a href="{{kb_item.url}}"><span>{{kb_item[field]}}</span></a>
                 </td>
               </tr>
@@ -155,7 +262,22 @@
     </div>
   </div>
   
-  
+  <div class="panel-footer">
+    <div class="btn-toolbar m-r pull-left">
+      <div class="btn-group">
+        <a ng-disabled="data.p == 1" href="javascript:void(0)" ng-click="setPageNum(data.p - 1)" class="btn btn-default" aria-label="${Previous page}"><i class="fa fa-chevron-left"></i></a>
+      </div>
+      <div ng-if="data.num_pages > 1 && data.num_pages < 20" class="btn-group">
+        <a ng-repeat="i in getNumber(data.num_pages) track by $index" ng-click="setPageNum($index + 1)" href="javascript:void(0)" ng-class="{active: ($index + 1) == data.p}" type="button" class="btn btn-default" aria-label="${Page} {{$index + 1}}">{{$index + 1}}</a>
+      </div>
+      <div class="btn-group">
+        <a ng-disabled="data.p == data.num_pages" href="javascript:void(0)" ng-click="setPageNum(data.p + 1)" class="btn btn-default" aria-label="${Next page}"><i class="fa fa-chevron-right"></i></a>
+      </div>
+    </div>
+    <div class="m-t-xs panel-title">${Rows {{data.window_start + 1}} - {{ mathMin(data.window_end,data.row_count) }} of {{data.row_count}}}</div>
+    
+    <span class="clearfix"></span>
+  </div>
   
 </div>
 
@@ -164,7 +286,8 @@
     <div class="well sm-well">
       <b>data.contributorList</b><code>{{data.contributorList}}</code><br/>
       <b>data.kb_labels:</b><code>{{data.kb_labels}}</code><br/>
-      <b></b><code></code><br/>
+      <b>data.keywords</b><code>{{data.keywords}}</code><br/>
+      <b>data.p</b><code>{{data.p}}</code><br/>
     </div>
   </div>
 </div>]]></template>

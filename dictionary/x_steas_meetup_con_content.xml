@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element extends="kb_knowledge" label="Content" max_length="40" name="x_steas_meetup_con_content" type="collection">
-        <element label="Meetup event" max_length="32" name="meetup_event" reference="x_steas_meetup_con_event" type="reference"/>
+        <element label="Meetup event" max_length="32" name="meetup_event" reference="x_snc_dev_meet_meetup" type="reference"/>
+        <element label="Meetup" max_length="32" name="meetup_group" reference="x_snc_dev_meet_group" type="reference"/>
+        <element label="ServiceNow Doc" max_length="40" name="servicenow_doc" type="boolean"/>
         <index name="index">
+            <element name="meetup_group"/>
+        </index>
+        <index name="index2">
             <element name="meetup_event"/>
         </index>
     </element>

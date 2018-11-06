@@ -22,14 +22,14 @@
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-03 16:13:29</sys_created_on>
         <sys_id>67851d0adb1caf00a99f70bdae96194b</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>34</sys_mod_count>
         <sys_name>MeetUps</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_instance_link_67851d0adb1caf00a99f70bdae96194b</sys_update_name>
-        <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2018-10-30 12:57:17</sys_updated_on>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-03 12:32:25</sys_updated_on>
         <title>MeetUps</title>
         <type>page</type>
         <url/>
@@ -43,7 +43,21 @@
 		"displayValue": ""
 	},
 	"e_widget": {
-		"value": { 'name' : 'widget-simple-list', 'table': 'x_snc_dev_meet_group', 'display_field': 'name', 'secondary_fields': 'owner', 'title': 'MeetUps' },
+		"value": {
+          'name' : 'group-data-table',
+          'agg_table': 'x_snc_dev_meet_group',
+          'agg_query': 'active=true',
+          'agg_group_by_field':'sys_id', 
+          'parent_table':'x_snc_dev_meet_group', 
+          'agg_to_parent_field': 'sys_id', 
+          'parent_query': 'active=true^sys_id=', 
+          'child_table': 'x_steas_meetup_con_content', 
+          'agg_to_child_field': 'sys_id',
+          'child_query': 'meetup_group.sys_id=', 
+          'parent_fields': 'name',
+          'child_fields': 'kb_category,short_description,meetup_event',
+          'target_url': 'sp?id=kb_article&sys_id='
+        },
 		"displayValue": ""
 	}
 }]]></widget_parameters>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="meetup_group" label="Meetup" language="en" table="x_steas_meetup_con_content">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>meetup_group</element>
+            <help/>
+            <hint/>
+            <label>Meetup</label>
+            <language>en</language>
+            <name>x_steas_meetup_con_content</name>
+            <plural>Meetups</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2018-11-02 08:36:47</sys_created_on>
+            <sys_id>626c28554f252700eb79aa95d310c7ff</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Meetup</sys_name>
+            <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+            <sys_update_name>sys_documentation_x_steas_meetup_con_content_meetup_group_en</sys_update_name>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2018-11-02 08:36:47</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

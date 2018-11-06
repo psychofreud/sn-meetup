@@ -18,7 +18,7 @@
         <dynamic_default_value/>
         <dynamic_ref_qual/>
         <example_text/>
-        <field>short_description</field>
+        <field>servicenow_doc</field>
         <global>false</global>
         <help_tag>More information</help_tag>
         <help_text/>
@@ -36,11 +36,11 @@
         <map_to_field>true</map_to_field>
         <mask_use_confirmation>false</mask_use_confirmation>
         <mask_use_encryption>false</mask_use_encryption>
-        <name>short_description</name>
-        <order>10</order>
+        <name>servicenow_doc</name>
+        <order>15</order>
         <price_if_checked>0</price_if_checked>
         <pricing_implications>false</pricing_implications>
-        <question_text>Topic</question_text>
+        <question_text>Product documentation or other document created by ServiceNow or product teams</question_text>
         <read_roles/>
         <rec_lookup_price/>
         <rec_price_if_checked>0</rec_price_if_checked>
@@ -56,20 +56,20 @@
         <sp_widget/>
         <summary_macro/>
         <sys_class_name>item_option_new</sys_class_name>
-        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
-        <sys_created_on>2018-09-11 19:12:06</sys_created_on>
-        <sys_id>3cfa8360db68e740a99f70bdae9619c0</sys_id>
-        <sys_mod_count>3</sys_mod_count>
-        <sys_name>Topic</sys_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-10-30 15:39:06</sys_created_on>
+        <sys_id>bd30fa1c4fad6300eb79aa95d310c7b4</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>servicenow_doc</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
-        <sys_update_name>item_option_new_3cfa8360db68e740a99f70bdae9619c0</sys_update_name>
+        <sys_update_name>item_option_new_bd30fa1c4fad6300eb79aa95d310c7b4</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2018-11-04 09:59:13</sys_updated_on>
+        <sys_updated_on>2018-11-05 23:04:19</sys_updated_on>
         <table/>
         <tooltip/>
-        <type>6</type>
+        <type>7</type>
         <ui_page/>
         <use_dynamic_default>false</use_dynamic_default>
         <use_reference_qualifier>simple</use_reference_qualifier>
@@ -83,39 +83,39 @@
         <visible_summary>true</visible_summary>
         <write_roles/>
     </item_option_new>
-    <sys_translated_text action="delete_multiple" query="documentkey=3cfa8360db68e740a99f70bdae9619c0"/>
-    <fx_price action="delete_multiple" query="id=3cfa8360db68e740a99f70bdae9619c0"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=bd30fa1c4fad6300eb79aa95d310c7b4"/>
+    <fx_price action="delete_multiple" query="id=bd30fa1c4fad6300eb79aa95d310c7b4"/>
     <fx_price action="INSERT_OR_UPDATE">
         <amount>0</amount>
-        <currency display_value="USD">USD</currency>
+        <currency display_value="GBP">GBP</currency>
         <field>price_if_checked</field>
-        <id>3cfa8360db68e740a99f70bdae9619c0</id>
+        <id>bd30fa1c4fad6300eb79aa95d310c7b4</id>
         <parent/>
         <reference_amount>0</reference_amount>
         <reference_currency display_value="USD">USD</reference_currency>
-        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
-        <sys_created_on>2018-09-11 19:12:06</sys_created_on>
-        <sys_id>fd2b8360db68e740a99f70bdae961944</sys_id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-10-30 15:39:06</sys_created_on>
+        <sys_id>6b40ba1c4fad6300eb79aa95d310c72a</sys_id>
         <sys_mod_count>0</sys_mod_count>
-        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-09-11 19:12:06</sys_updated_on>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-10-30 15:39:06</sys_updated_on>
         <table>item_option_new</table>
         <type>calculated</type>
     </fx_price>
     <fx_price action="INSERT_OR_UPDATE">
         <amount>0</amount>
-        <currency display_value="USD">USD</currency>
+        <currency display_value="GBP">GBP</currency>
         <field>rec_price_if_checked</field>
-        <id>3cfa8360db68e740a99f70bdae9619c0</id>
+        <id>bd30fa1c4fad6300eb79aa95d310c7b4</id>
         <parent/>
         <reference_amount>0</reference_amount>
         <reference_currency display_value="USD">USD</reference_currency>
-        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
-        <sys_created_on>2018-09-11 19:12:06</sys_created_on>
-        <sys_id>b52b8360db68e740a99f70bdae961944</sys_id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-10-30 15:39:06</sys_created_on>
+        <sys_id>2340ba1c4fad6300eb79aa95d310c729</sys_id>
         <sys_mod_count>0</sys_mod_count>
-        <sys_updated_by>christian.ring@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-09-11 19:12:06</sys_updated_on>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-10-30 15:39:06</sys_updated_on>
         <table>item_option_new</table>
         <type>calculated</type>
     </fx_price>

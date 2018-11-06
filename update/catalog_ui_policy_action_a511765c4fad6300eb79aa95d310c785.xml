@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="catalog_ui_policy_action">
+    <catalog_ui_policy_action action="INSERT_OR_UPDATE">
+        <catalog_item display_value="Create MeetUp Content">84770ba8db28e740a99f70bdae961925</catalog_item>
+        <catalog_variable>IO:f63bc320db68e740a99f70bdae9619e9</catalog_variable>
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field/>
+        <mandatory>ignore</mandatory>
+        <order>100</order>
+        <sys_class_name>catalog_ui_policy_action</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-10-30 15:42:38</sys_created_on>
+        <sys_id>a511765c4fad6300eb79aa95d310c785</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>meetup_event</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>catalog_ui_policy_action_a511765c4fad6300eb79aa95d310c785</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-10-30 15:42:38</sys_updated_on>
+        <table/>
+        <ui_policy display_value="Hide meetup event and meetup for ServiceNow docs">07d0f65c4fad6300eb79aa95d310c7df</ui_policy>
+        <variable>meetup_event</variable>
+        <variable_set/>
+        <visible>false</visible>
+    </catalog_ui_policy_action>
+</record_update>

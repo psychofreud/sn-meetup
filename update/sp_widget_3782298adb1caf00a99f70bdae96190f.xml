@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, $rootScope, $timeout) {
+        <client_script><![CDATA[function($scope, $rootScope, $timeout, spUtil) {
   /* widget controller */
   var c = this;
 	c.fetching = false;
 	var currentData;
 	//Broadcasting Listening Widget
 	$scope.$on("mu_icon_trigger", function(event, data) {
-		
+		console.log("[mu_icon_trigger DATA]::: " + JSON.stringify(data));
+	
 		currentData = data;
 		c.data.e_widget = currentData.e_widget;
 		c.data.action = 'widget_changed';
 		c.fetching = true;
-		console.log('currentData: ' + JSON.stringify(currentData));
+		console.log('c.data.e_widget: ' + JSON.stringify(c.data.e_widget));
+		
 		c.server.update().then(function(response) {
 			c.data.action = '';
 			c.data.e_widget = null;
 			c.fetching = false;
 		});
-		console.log("[mu_icon_trigger DATA]::: " + JSON.stringify(data));
+		
 		
 	});
 }]]></client_script>
@@ -41,6 +43,7 @@
         <script><![CDATA[(function() {
   /* populate the 'data' object */
   /* e.g., data.table = $sp.getValue('table'); */
+	
 	if(input && input.e_widget && input.action == 'widget_changed') {
 		var eWidget = input.e_widget;
 		data.eWidget = getWidget(eWidget.name, eWidget);
@@ -57,14 +60,14 @@
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-03 17:10:19</sys_created_on>
         <sys_id>3782298adb1caf00a99f70bdae96190f</sys_id>
-        <sys_mod_count>22</sys_mod_count>
+        <sys_mod_count>27</sys_mod_count>
         <sys_name>MU E Widget</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_widget_3782298adb1caf00a99f70bdae96190f</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-09-15 12:15:04</sys_updated_on>
+        <sys_updated_on>2018-11-02 15:07:10</sys_updated_on>
         <template><![CDATA[<div>
 <!-- your widget template -->
   <div class="row" ng-if="!c.fetching">

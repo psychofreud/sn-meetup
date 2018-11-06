@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, spUtil, $sce, $rootScope, $timeout) {
+	var c = this;
+	c.DEBUG = false;
+	
+	spUtil.setSearchPage('kb');
+	$scope.data.text = $sce.trustAsHtml($scope.data.text);
+	$timeout(function() {
+		$rootScope.$broadcast('sp.update.breadcrumbs', $scope.data.breadcrumbs);
+	});
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>td {
+	padding: .5em;
+  	line-height: 1em;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>color</field_list>
+        <has_preview>false</has_preview>
+        <id>mu-article-page</id>
+        <internal>false</internal>
+        <link/>
+        <name>MU Article Page</name>
+        <option_schema>[{"name":"show_star_rating","default_value":"Use system properties","section":"Presentation","label":"Show star rating","type":"choice","choices":[{"label":"Yes","value":"Yes"},{"label":"No","value":"No"},{"label":"Use system properties","value":"Use system properties"}]},{"name":"sys_id","section":"other","label":"Article ID","type":"string"}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[var articleSysID = $sp.getParameter('sys_id') || (input && input.sys_id ? input.sys_id : null);
+var show_star_rating = options.show_star_rating || (input && input.show_star_rating ? input.show_star_rating : "");
+var table = options.table || (input && input.table ? input.table : 'kb_knowledge');
+var t = data;
+data.kb_knowledge_page = $sp.getDisplayValue("kb_knowledge_page") || "kb_view";
+var articleGR = new GlideRecord(table);
+articleGR.get(articleSysID);
+var recordIsValid = articleGR.isValidRecord();
+var canReadArticle = articleGR.canRead();
+t.isvalid = recordIsValid && canReadArticle;
+if (canReadArticle) {
+	//articleGR.incrementViewCount(); // update sys_view_count immediately on kb_knowledge record
+	/*
+	var art = new GlideRecord("kb_use");
+	if (art.isValid()) {
+		art.article = articleGR.getUniqueValue();
+		art.user = gs.getUserID();
+		art.viewed = true;
+		art.insert(); // kb_use records are aggregated to update sys_view_count nightly
+		$sp.logStat('KB Article View', "kb_knowledge", articleGR.getUniqueValue(), articleGR.short_description);
+	}
+	*/
+	t.category = articleGR.getValue('kb_category');
+	t.sys_id = articleSysID;
+	t.showAttachments = false;
+	if (articleGR.display_attachments)
+		t.showAttachments = true;
+	t.categoryDisplay = articleGR.getDisplayValue('kb_category');
+	t.short_description = articleGR.getValue('short_description');
+	if (articleGR.getValue('article_type') == 'wiki')
+		t.text = GlideWikiModel().render(articleGR.getValue('wiki'));
+	else { 
+		if(new GlidePluginManager().isActive('com.snc.knowledge_blocks'))
+			t.text = new KBBlock().getArticleContent(articleGR);
+		else
+			t.text = articleGR.getValue('text');
+	} 
+	
+	t.sys_view_count = articleGR.getDisplayValue('sys_view_count');
+	t.author = articleGR.getDisplayValue('author');
+	t.publishedUtc = articleGR.getValue('published');
+	t.number = articleGR.getValue('number');
+	if (showStarRating())
+		t.rating = articleGR.getValue('rating');
+	t.direct = false;
+	if (articleGR.direct)
+		t.direct = true;
+
+	t.breadcrumbs = [{label: t.short_description, url: '#'}];
+	if (!articleGR.kb_category.nil()) {
+		var rec = articleGR.kb_category.getRefRecord();
+		while (rec.getRecordClassName() == "kb_category") {
+			t.breadcrumbs.unshift({label: rec.getDisplayValue(), url: '?id=kb_category&kb_category=' + rec.getUniqueValue()});
+			rec = rec.parent_id.getRefRecord();
+		}
+	}
+	t.breadcrumbs.unshift({label: gs.getMessage("Knowledge Base"), url: '?id=' + t.kb_knowledge_page});
+}
+		
+function showStarRating() {
+	if (show_star_rating == "Yes")
+		return true;
+
+	if (show_star_rating == "No")
+		return false;
+
+	// check gating property for all rating options
+	if (gs.getProperty("glide.knowman.show_rating_options", "true") != "true")
+		return false;
+
+	// does user have the right role?
+	if (!gs.hasRole(gs.getProperty("glide.knowman.show_rating_options.roles")))
+		return false;
+
+	// check specific property for stars
+	if (gs.getProperty("glide.knowman.show_star_rating", "true") != "true")
+		return false;
+
+	// does user have the right role?
+	return gs.hasRole(gs.getProperty("glide.knowman.show_star_rating.roles"));
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-11-03 13:18:24</sys_created_on>
+        <sys_id>657672694f256700eb79aa95d310c7bc</sys_id>
+        <sys_mod_count>31</sys_mod_count>
+        <sys_name>MU Article Page</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_657672694f256700eb79aa95d310c7bc</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-03 21:15:04</sys_updated_on>
+        <template><![CDATA[<div ng-if="data.isvalid" class="panel panel-{{options.color}} b">
+
+  <div class="panel-heading">
+      <h2 class="panel-title h4">
+          <span class="pull-left">{{::data.short_description}}</span>&nbsp;
+          <span class="pull-right">{{::data.number}}</span>
+      </h2>
+  </div>
+
+  <div class="panel-body m-b-lg wrapper-lg">
+
+    <div class="row m-b-lg b-b">
+        <span class="author pad-right" ng-if="data.author">
+          <glyph sn-char="user" class="pad-right" />
+          ${Authored by {{::data.author}}}
+        </span>
+        <span ng-if="data.sys_view_count == 1" class="views pad-right">
+          <span class="pad-right">&#8226;</span> <glyph sn-char="eye-open" class="pad-right" />
+          ${{{::data.sys_view_count}} View}
+        </span>
+        <span ng-if="data.sys_view_count > 1" class="views pad-right">
+          <span class="pad-right">&#8226;</span> <glyph sn-char="eye-open" class="pad-right" />
+          ${{{::data.sys_view_count}} Views}
+        </span>
+        <span class="published pad-right">
+          <span class="pad-right">&#8226;</span> <glyph sn-char="calendar" class="pad-right" />
+          <sn-day-ago date="data.publishedUtc"/>
+        </span>
+        <span ng-if="data.rating > 0 && !data.direct" title="{{::data.rating}} rating">
+          <span class="pad-right">&#8226;</span> <uib-rating ng-model="::data.rating" max="5" readonly="true" aria-label="${Article rating} - ${Read Only}"/>
+        </span>
+    </div>
+
+    <div ng-if="!data.direct" class="kb_article" ng-bind-html="::data.text" style="overflow-x:auto;"></div>
+
+    <h4 ng-if="data.direct">
+      ${View or download the attachments below}
+    </h4>
+    <div ng-if="::data.showAttachments || data.direct" class="b-t m-t">
+      <sp-attachment-manager table="'kb_knowledge'" sys-id="::data.sys_id" omit-edit="true"></sp-attachment-manager>
+    </div>
+
+  </div>
+</div>
+
+<div ng-if="!data.isvalid">
+  ${Article not found}
+</div>
+
+<div class="row" ng-if="c.DEBUG==true">
+  <div class="col-sm-12">
+    <div class="well sm-well">
+      <b></b><code>{{}}</code><br/>
+      <b>data</b><code>{{::c.data}}</code><br/>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

@@ -1,0 +1,1249 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $http, spScUtil, spUtil, nowAttachmentHandler, $rootScope, $sanitize, $window, $sce, i18n, $timeout, $log, spAriaUtil, $document, spModal, $q, spAtf, $location) {
+	var c = this;
+	c.quantity = c.data.quantity ? c.data.quantity + "" : "1";
+	c.mandatory = [];
+	$scope.stickyHeaderTop = '0px';
+
+	c.widget._debugContextMenu = [
+		[ i18n.getMessage("Open") + " sc_cat_item", function() {
+			var item = c.data.sc_cat_item;
+			$window.open("/sp_config?id=form&table=" + item.table + "&sys_id=" + item.sys_id); }]
+	];
+	
+	$rootScope.$on('spModel.gForm.rendered', function() {
+		$timeout(function() {
+							spAtf.init().then(function(atf) {
+								$scope._atf = atf;
+								atf.expose('catalog_util', catalogUtil);
+							});
+		}, 1000);
+	});
+	
+	var catalogUtil = {
+		submit: function () {
+			var deferred = $q.defer();
+			if (!$scope.triggerOnSubmit())
+				deferred.reject("Can't submit form");
+			var cleanUp = $scope.$on('$sp.sc_cat_item.submitted', function(o, result) {
+				$timeout(function() {
+					cleanUp();
+					deferred.resolve(result);
+				}, 10);
+			});
+			return deferred.promise;
+		},
+		
+		addToCart: function() {
+			var defer = $q.defer();
+			if (!$scope.triggerAddToCart())
+				defer.reject("Can't submit form.");
+			var cleanup = $scope.$on('$sp.sc_cat_item.add_to_cart', function(o, result) {
+				$timeout(function() {
+					cleanup();
+					defer.resolve(result);
+				}, 10);
+			});
+			return defer.promise;
+		},
+		
+		submitCatItem: function() {
+			var defer = $q.defer();
+			if ($scope.triggerOnSubmit()) {
+				
+				if ($scope.data.sys_properties.twostep) {
+					defer.resolve();
+				}
+				else{ 
+					var cleanUp = $scope.$on('$sp.sc_cat_item.submitted', function(o, result) {
+						$timeout(function() {
+							cleanUp();
+							result.single_step = true;
+							defer.resolve(result);
+						}, 10);
+					});
+				}
+			}	
+			else
+				defer.reject();
+			return defer.promise;
+		},
+		
+		setQuantity: function(quantity) {
+			if ($scope.c.data.sc_cat_item.sys_class_name !== "sc_cat_item_producer" && $scope.c.data.sc_cat_item.sys_class_name !== "std_change_record_producer") {
+				$scope.c.quantity = quantity;
+				$scope.$apply();
+			}
+		},
+		
+		getQuantity: function() {
+			return $scope.c.quantity;
+		},
+		
+		getPrice: function() {
+			var obj = {};
+			obj.price = $scope.data.sc_cat_item.price;
+			obj.recurring_price = $scope.data.sc_cat_item.recurring_price;
+			obj.recurring_frequency = $scope.data.sc_cat_item.recurring_frequency;
+			return obj;
+		}
+	}
+	
+	c.showAddCartBtn = function() {
+		return !$scope.submitted &&
+		c.options.show_add_cart_button &&
+			c.data.sc_cat_item.sys_class_name !== "sc_cat_item_producer" &&
+			c.data.sc_cat_item.sys_class_name !== "std_change_record_producer" &&
+			!c.data.sc_cat_item.no_cart && !c.data.is_cart_item;
+	}
+	
+	c.showQuantitySelector = function() {
+		return c.data.sc_cat_item.sys_class_name !== "sc_cat_item_producer" &&
+			c.data.sc_cat_item.sys_class_name !== "std_change_record_producer" &&
+			!c.data.sc_cat_item.no_quantity &&
+			(c.data.sc_cat_item.cart_guide === undefined || c.data.sc_cat_item.cart_guide === null)&&
+			(!c.data.sc_cat_item.no_order_now || !c.data.sc_cat_item.no_cart);
+	}
+
+	c.showOrderNowButton = function() {
+		return !$scope.data.is_cart_item && (c.data.sc_cat_item.use_sc_layout || !c.data.sc_cat_item.no_order_now);
+	}
+
+	c.showAddToWishlist = function () {
+		return !$scope.submitted && (c.data.showWishlist && !c.data.is_cart_item && c.options.show_add_to_wishlist_button === 'true');
+	}
+
+	c.allowOrder = function() {
+		if (c.data.sc_cat_item.use_sc_layout)
+			return true;
+
+		if (c.data.sc_cat_item.no_order)
+			return false;
+
+		if (c.data.sc_cat_item.no_order_now && c.data.sc_cat_item.no_cart)
+			return false;
+
+		return true;
+	}
+	
+	c.hideCartMsg = function () {
+		$scope.data.showMsg = false;
+	}
+	
+	c.showAttachments = function() {
+		return !$scope.submitted &&
+			c.data.sc_cat_item.sys_class_name !== "std_change_record_producer";
+	};
+
+	$scope.$on('dialog.upload_too_large.show', function(e){
+		$log.error($scope.m.largeAttachmentMsg);
+		spUtil.addErrorMessage($scope.m.largeAttachmentMsg);
+	});
+
+	$scope.m = $scope.data.msgs;
+	var ah = $scope.attachmentHandler = new nowAttachmentHandler(setAttachments, appendError);
+	function appendError(error) {
+		spUtil.addErrorMessage(error.msg + error.fileName);
+	}
+	ah.setParams($scope.data._attachmentTable, $scope.data._generatedItemGUID, 1024 * 1024 * $scope.data.maxAttachmentSize);
+	function setAttachments(attachments, action) {
+		$scope.attachments = attachments;
+		if (action === "added")
+			$scope.setFocusToAttachment();
+		if (action === "renamed")
+			spAriaUtil.sendLiveMessage($scope.m.renameSuccessMsg);
+		if (action === "deleted")
+			spAriaUtil.sendLiveMessage($scope.m.deleteSuccessMsg);
+	}
+	$scope.attachmentHandler.getAttachmentList();
+
+	$scope.confirmDeleteAttachment = function(attachment) {
+		spModal.confirm($scope.data.msgs.delete_attachment).then(function() {
+			$scope.attachmentHandler.deleteAttachment(attachment);
+			$('#add_attachment_button').focus();
+		});
+	}
+
+	$scope.dismissWishListMessage = function() {
+		$scope.is_update_wishlist = false;
+	}
+	
+  if ($scope.data.sc_cat_item) {
+		$scope.data.sc_cat_item.description = $sce.trustAsHtml($scope.data.sc_cat_item.description);
+		if (angular.equals($scope.data.sc_cat_item._fields, {}))
+				$scope.data.no_fields = true;
+		if ($scope.data.sc_cat_item.sys_class_name !== "sc_cat_item_producer" && $scope.data.sc_cat_item.sys_class_name !== "std_change_record_producer")
+			$scope.submitButtonMsg = $scope.m.orderNowMsg;
+		else
+			$scope.submitButtonMsg = $scope.m.submitMsg;
+		
+		// Breadcrumbs
+		if (!$scope.data.categories)
+		$scope.data.categories = [];
+		if ($scope.data.is_wishlist_item) {
+			$scope.data.categories.unshift({label: $scope.m.wishlistMsg, url: '?id=sc_wishlist'});
+			$scope.data.categories.push({label: $scope.data.sc_cat_item.name, url: '#'});
+		}
+		else if ($scope.data.is_cart_item) {
+			$scope.data.categories.unshift({label: $scope.m.cartMsg, url: '?id=sc_cart'});
+			$scope.data.categories.push({label: $scope.data.sc_cat_item.name, url: '#'});
+		}
+		else if ($scope.data.categories.length > 0) {
+			$scope.data.categories.unshift({label: $scope.data.sc_catalog || $scope.page.title, url: '?id=' + $scope.data.sc_catalog_page});
+			$scope.data.categories.push({label: $scope.data.sc_cat_item.name, url: '#'});
+		}
+		else {
+			$scope.data.categories.push({label: $scope.data.sc_cat_item.name, url: '#'});
+		}
+		
+		$timeout(function() {
+			$scope.$emit('sp.update.breadcrumbs', $scope.data.categories);
+		});
+		spUtil.setSearchPage('sc');
+	} else {
+		var notFoundBC = [{label: $scope.page.title, url: '?id=' + $scope.data.sc_catalog_page}];
+		$timeout(function() {
+			$scope.$emit('sp.update.breadcrumbs', notFoundBC);
+		});
+		spUtil.setSearchPage('sc');
+	};
+
+	c.getItemId = function () {
+		return $scope.data.sc_cat_item ? $scope.data.sc_cat_item.sys_id : -1;
+	};
+
+	var g_form;
+	$scope.$on('spModel.gForm.initialized', function(e, gFormInstance){
+		if (gFormInstance.getSysId() != -1 && gFormInstance.getSysId() != c.getItemId())
+			return;
+		g_form = gFormInstance;
+		
+		$timeout(function() {
+				$rootScope.$emit('spModel.gForm.rendered', g_form);
+		}, 175);
+		
+		// This runs after all onSubmit scripts have executed
+		g_form.$private.events.on('submitted', function(){
+			if ($scope.data.sc_cat_item.item_action === "order")
+				getOne();
+			else if ($scope.data.sc_cat_item.item_action === "add_to_cart")
+				addToCart();
+			else if ($scope.data.sc_cat_item.item_action == "update_cart")
+				updateCart();
+		});
+	});
+
+	function getVarData(fields) {
+		var reqData = {};
+		for(var obj in fields)
+			reqData[fields[obj].name] = fields[obj].value;
+		return reqData;
+	}
+
+	function addLink(url, msg) {
+		return " <a href=" + url + ">" + msg + "</a>";
+	}
+	
+	$scope.$on("$sp.service_catalog.wishlist.update", function(evt, item) {
+		if (item === $scope.data.sys_id)
+			$scope.data.show_wishlist_msg = false;
+	});
+
+	$scope.addToWishlist = function() {
+		$scope.submitting = true;
+		$scope.m.actionMsg = $scope.data.is_wishlist_item ? $scope.m.wishlistUpdateMsg : $scope.m.wishlistAddMsg;
+		$scope.m.actionMsg += addLink('?id=sc_wishlist', $scope.m.viewWishListMsg);
+		$scope.m.actionMsg += '<i class="fa fa-close pull-right pointer" aria-label="${Close Notification}" tabindex="0" ng-click="c.hideCartMsg()"/>';
+		$scope.m.actionMsg = $sce.trustAsHtml($scope.m.actionMsg);
+		$scope.is_update_wishlist = false;
+		spScUtil.addToWishlist($scope.data.sc_cat_item.sys_id, c.quantity, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID).then(function(response){
+			var cartItemId = "";
+			for (var i=0; i<response.data.result.items.length; i++) {
+				var item = response.data.result.items[i];
+				if (item.catalog_item_id === $scope.data.sc_cat_item.sys_id) {
+					cartItemId = item.cart_item_id;
+					break;
+				}
+			}
+			$rootScope.$broadcast("$sp.service_catalog.wishlist.add_item");
+			$rootScope.$broadcast("$sp.service_catalog.wishlist.update", cartItemId);
+			$scope.data.showMsg = $scope.is_update_wishlist = true;
+			$scope.data.is_wishlist_item = true;
+			$scope.data.show_wishlist_msg = false;
+			$scope.submitting = false;
+			spUtil.scrollTo('#sc_cat_item', 300);
+		});
+	}
+
+	$scope.triggerAddToCart = function() {
+		$scope.data.sc_cat_item.item_action = "add_to_cart";
+		$scope.data.sc_cat_item.quantity = c.quantity;
+		if (g_form)
+			return g_form.submit();
+		return false;
+	}
+
+	$scope.triggerUpdateCart = function() {
+		$scope.data.sc_cat_item.item_action = "update_cart";
+		$scope.data.sc_cat_item.quantity = c.quantity;
+		if (g_form)
+			return g_form.submit();
+		return false;
+	}
+
+	$scope.triggerOnSubmit = function(){
+		if ($scope.options.isServiceWorkspace && $window.frameElement) {
+			var workspaceParams = {};
+			workspaceParams.sysparm_parent_table = $window.frameElement.getAttribute('parent-table');
+			workspaceParams.sysparm_parent_sys_id = $window.frameElement.getAttribute('parent-sys-id');
+			$scope.data.workspaceParams = workspaceParams;
+		}
+		$scope.data.sc_cat_item.item_action = "order";
+		$scope.data.sc_cat_item.quantity = c.quantity;
+		if (g_form)
+			return g_form.submit();
+		return false;
+	}
+
+	function setFieldsReadonly() {
+		var allFields = g_form.getFieldNames();
+		for (var fieldName in allFields) {
+			g_form.setReadonly(allFields[fieldName], true);
+		}
+	}
+
+	// order / create request
+	function getOne() {
+		$scope.server.get({
+			action: 'log_request',
+			itemDetails: {sys_id: $scope.data.sc_cat_item.sys_id, 
+										name: $scope.data.sc_cat_item.name,
+										sys_class_name: $scope.data.sc_cat_item.sys_class_name}
+		});
+
+		//Required to pass as payload for usage as embeddedWidget
+		var embeddedWidgetOptions = {
+			"auto_redirect" : "true",
+			"requested_for_id" : "",
+			"requested_for_display" : ""
+		};
+
+		if ($scope.data.sc_cat_item.sys_class_name != "sc_cat_item_producer" && $scope.data.sc_cat_item.sys_class_name != "std_change_record_producer") {
+			if ($scope.data.sys_properties.twostep) {
+				var payload = {
+					cart: 'cart_' + $scope.data.sc_cat_item.sys_id,
+					itemDetails: {sys_id: $scope.data.sc_cat_item.sys_id, quantity: $scope.data.sc_cat_item.quantity, fields: getVarData($scope.data.sc_cat_item._fields), newRecordID: $scope.data._generatedItemGUID},
+					action: $scope.data.is_wishlist_item ? "order_wishlist_item" : "order_item",
+					workspaceParams: $scope.data.workspaceParams
+				};
+				for (var embeddedOption in embeddedWidgetOptions) {
+					payload[embeddedOption] = c.options[embeddedOption] || embeddedWidgetOptions[embeddedOption];
+				}
+				$scope.server.get(payload).then(function(response) {
+					var orderItemModalCtrl;
+					var unregister = $scope.$on('$sp.service_catalog.cart.cancel_order', function(){
+						orderItemModalCtrl.close();
+					});
+					var closeModalOnSubmit = $scope.$on('$sp.service_catalog.cart.submitted', function(){
+						orderItemModalCtrl.close();
+						setFieldsReadonly();
+						$scope.submitted = true;
+					});
+
+					var orderItemModal = angular.copy(response.data.orderItemModal);
+					orderItemModal.options.afterOpen = function(ctrl){
+						orderItemModalCtrl = ctrl;
+					};
+					orderItemModal.options.afterClose = function() {
+							unregister();
+							closeModalOnSubmit();
+							c.orderItemModal = null;
+							orderItemModalCtrl = null;
+						};
+						c.orderItemModal = orderItemModal;
+					});
+			} else {
+				var additionalParms = {};
+				if ($scope.data.workspaceParams) {
+					additionalParms.sysparm_parent_sys_id = $scope.data.workspaceParams.sysparm_parent_sys_id;
+					additionalParms.sysparm_parent_table = $scope.data.workspaceParams.sysparm_parent_table;
+				}
+				if ($scope.data.is_wishlist_item) {
+				
+					spScUtil.orderWishlistedItem($scope.data.sc_cat_item.sys_id, $scope.data.sc_cat_item.quantity, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID, additionalParms).then(function(response) {
+						var a = response.data.result;
+						$scope.$emit("$$uiNotification", a.$$uiNotification);
+						$scope.$emit("$sp.sc_cat_item.submitted", a);
+						$rootScope.$broadcast("$sp.service_catalog.wishlist.update");
+						if (c.options.auto_redirect == 'false') {
+							$rootScope.$broadcast("$sp.service_catalog.cart.submitted", true);
+							spUtil.addInfoMessage($scope.m.requestSubmitted);
+							return;
+						} else
+							$location.search('id=sc_request&is_new_order=true&table=sc_request&sys_id=' + a.sys_id);
+					});
+				}
+				else {
+					spScUtil.orderNow($scope.data.sc_cat_item.sys_id, $scope.data.sc_cat_item.quantity, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID, additionalParms).then(function(response) {
+							var a = response.data.result;
+
+							$scope.$emit("$$uiNotification", a.$$uiNotification);
+							$scope.$emit("$sp.sc_cat_item.submitted", a);
+							if (c.options.auto_redirect == 'false') {
+								$rootScope.$broadcast("$sp.service_catalog.cart.submitted", true);
+								spUtil.addInfoMessage($scope.m.requestSubmitted);
+								return;
+							} else if (!$scope._atf)
+								$location.search('id=sc_request&is_new_order=true&table=sc_request&sys_id=' + a.sys_id);
+					});
+				}
+			}
+		} else {
+			postCatalogFormRequest().then(function(response) {
+				var a = response.data.result;
+				if (!$scope.options.isServiceWorkspace)
+				$scope.$emit("$$uiNotification", a.$$uiNotification);
+				$scope.$emit("$sp.sc_cat_item.submitted", a);
+				if ($scope.data.is_wishlist_item)
+					$rootScope.$broadcast("$sp.service_catalog.wishlist.update");
+				if (c.options.auto_redirect == 'false') {
+					setFieldsReadonly();
+					$scope.submitted = true;
+				} else if (!$scope._atf)
+						handleRedirect(a.number, a.table, a.sys_id, a.redirect_to, a.redirect_portal_url);
+				$scope.submitting = false;
+				$scope.submitButtonMsg = $scope.m.submittedMsg;
+			});
+		}
+	}
+
+	function addToCart() {
+		$scope.server.get({
+			action: 'log_request',
+			itemDetails: {sys_id: $scope.data.sc_cat_item.sys_id, 
+										name: $scope.data.sc_cat_item.name,
+										sys_class_name: $scope.data.sc_cat_item.sys_class_name}
+		});
+		
+		postCatalogFormRequest().then(function(response) {
+			$rootScope.$broadcast("$sp.service_catalog.cart.add_item");
+			$rootScope.$broadcast("$sp.service_catalog.cart.update");
+			$scope.$emit("$sp.sc_cat_item.add_to_cart", $scope.data._generatedItemGUID);
+			if ($scope.data.is_wishlist_item) {
+				$rootScope.$broadcast("$sp.service_catalog.wishlist.update");
+				$scope.data.is_wishlist_item = false;
+			}
+			c.status = i18n.getMessage("Added item to shopping cart");
+			$scope.server.get({action: 'init_item'}).then(function(response) {
+				$scope.data._generatedItemGUID = response.data._generatedItemGUID;
+				ah.setParams($scope.data._attachmentTable, $scope.data._generatedItemGUID, 1024 * 1024 * $scope.data.maxAttachmentSize);
+				$scope.attachmentHandler.getAttachmentList();
+				$scope.m.actionMsg = $scope.m.cartAddMsg + addLink('?id=sc_cart', $scope.m.viewCartMsg);
+				$scope.m.actionMsg += '<i class="fa fa-close pull-right pointer" aria-label="${Close Notification}" tabindex="0" ng-click="c.hideCartMsg()"/>';
+				$scope.m.actionMsg = $sce.trustAsHtml($scope.m.actionMsg);
+				$scope.data.showMsg = true;
+				$scope.submitting = false;
+				spUtil.scrollTo('#sc_cat_item', 300);
+			});
+		});
+	}
+
+	function updateCart() {
+		postCatalogFormRequest().then(function(response) {
+			c.status = i18n.getMessage("Updated Item to shopping cart.");
+			$location.search('id=sc_cart');
+		})
+	}
+
+	function postCatalogFormRequest() {
+		$scope.submitting = true;
+		if ($scope.data.is_wishlist_item) {
+			$scope.is_update_wishlist = false;
+			$scope.data.show_wishlist_msg = false;
+			if ($scope.data.sc_cat_item.sys_class_name === "sc_cat_item_producer")
+				return spScUtil.submitWishlistedProducer($scope.data.sc_cat_item.sys_id, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID, $scope.data.workspaceParams);
+			else if ($scope.data.sc_cat_item.item_action === "add_to_cart")
+				return spScUtil.addWishlistedItemToCart($scope.data.sc_cat_item.sys_id, $scope.data.sc_cat_item.quantity, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID);
+		}
+		else if ($scope.data.is_cart_item)
+			return spScUtil.updateCart($scope.data._generatedItemGUID, $scope.data.sc_cat_item.quantity, getVarData($scope.data.sc_cat_item._fields));
+		else if ($scope.data.sc_cat_item.sys_class_name === "sc_cat_item_producer")
+			return spScUtil.submitProducer($scope.data.sc_cat_item.sys_id, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID, $scope.data.workspaceParams);
+		else if ($scope.data.sc_cat_item.sys_class_name === "std_change_record_producer")
+			return spScUtil.submitStdChgProducer($scope.data.sc_cat_item.sys_id, $scope.data.stdChg.twoStep, $scope.data.stdChg.currentVersion, $scope.data._generatedItemGUID);
+		else if ($scope.data.sc_cat_item.item_action === "add_to_cart")
+			return spScUtil.addToCart($scope.data.sc_cat_item.sys_id, $scope.data.sc_cat_item.quantity, getVarData($scope.data.sc_cat_item._fields), $scope.data._generatedItemGUID);
+	}
+
+	// spModel populates mandatory - hasMandatory is called by the submit button
+	$scope.hasMandatory = function() {
+		return c.mandatory && c.mandatory.length > 0;
+	};
+
+	// switch catalog items
+	var unregister = $scope.$on('$sp.list.click', onListClick);
+	$scope.$on("$destroy", function() {
+		$rootScope.$broadcast("$sp.service_catalog.item.close");
+		unregister();
+	});
+
+	function onListClick(evt, arg) {
+		$scope.data.sys_id = arg.sys_id;
+		spUtil.update($scope);
+	}
+	
+	function formatRedirectUrl(page, table, sys_id) {
+		var url;
+		var paramObj = {page: page, table: table, sys_id: sys_id};
+		url = spUtil.format(c.options.url, paramObj);
+		return url;
+	}
+	
+	function handleRedirect(n, table, sys_id, redirectTo, redirectUrl) {
+		
+		var page = 'form';
+		if (table == 'sc_request')
+			page = 'sc_request';
+		else if (n)
+			page = 'ticket';
+		
+		if (redirectTo == 'catalog_home') 
+			page = 'sc_home';
+
+		//For Standard change, always direct to form
+		if ($scope.data.sc_cat_item.sys_class_name === "std_change_record_producer")
+			page = 'form';
+		
+		if (c.options.page) {page = c.options.page;}
+		if (c.options.table) {table = c.options.table;}
+		var url = formatRedirectUrl(page, table, sys_id);
+		if ($scope.data.sc_cat_item.sys_class_name === "sc_cat_item_producer" || $scope.data.sc_cat_item.sys_class_name === "std_change_record_producer") {
+			if (redirectUrl)
+				$window.location.href = redirectUrl;
+			else
+				$location.search(url);
+			return;
+		}
+		$location.search(formatRedirectUrl('sc_request', 'sc_request', sys_id));
+		return;
+	}
+    
+    $timeout(function() {
+        if ($document[0].getElementsByClassName('sc-sticky-item-header').length > 0) {
+            var titleHeight = $document[0].getElementsByClassName('sc-sticky-item-header')[0].clientHeight;
+            $scope.stickyHeaderTop = '-' + (titleHeight - 20 - $document[0].getElementsByClassName('sc-cat-item-short-description')[0].clientHeight) + 'px;';
+        }
+    });
+	
+	/** CUSTOM CODE **/
+	$scope.cancelTrigger = function() {
+		$rootScope.$broadcast("$sp.cancelled");
+	}
+	/** END OF CUSTOM CODE **/
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel-button {
+  float: none;
+}
+
+.sp-attachment-add {
+  padding: 5px;
+}
+
+.p-t-none {
+  padding-top: 0 !important;
+}
+
+.file-list-wrap {
+	margin-bottom: 10px;
+}
+
+.sc-btn {
+  color: $text-color;
+}
+
+.dismiss-button {
+  position: absolute;
+  top: 1rem;
+	right: 10px;
+	color: $text-color;
+	cursor: pointer;
+}
+
+.item-header {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.sc-sticky-item-header {
+  position: sticky;
+  position: -webkit-sticky;
+  position: -ms-sticky;
+  top: -($font-size-h2 + $font-size-base);
+  z-index: 10;
+  background-color: inherit;
+  border-radius: 4px 4px 0 0;
+}
+.sc-fixed {
+  position: fixed;
+  max-height: 100%;
+  width: 17.67777%;
+}
+.no-margin {
+	margin: 0px; 
+}
+.sc-item-error-messages {
+  max-height: 100%;
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%; 
+}
+.sc-field-error-label {
+  margin-right: .5em; 
+  display: inline-block;
+  cursor: pointer;
+}
+.image-gallery {
+  font-size: 8px;
+  color: #CECECE;
+  .active {
+    color: #717171;
+  }
+  i {
+    padding: 0 5px;
+  }
+}
+.relative {
+  position: relative;
+}
+.sc-order-widget-btn {
+   position: absolute;
+   left: 9%;
+   top: 10px
+}
+@media only screen and (max-width : 992px) {
+  .sc-fixed {
+    position: relative;
+    width: 100%;
+  }
+  .wishlist-update-message {
+    display : block;
+  }
+  .sc-item-error-messages {
+    position: relative;
+  }
+  .read-more, .read-less {
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .more-text {
+    display: none;
+  }
+  .inline-cart {
+    display: none;
+  }
+  .right-side-cart {
+    display: inherit !important;
+  }
+}
+@media only screen and (max-width : 768px) {
+  .sc-sticky-item-header {
+     position: inherit;
+  }
+  
+}
+.inline-cart {
+  .quantity-selector {
+    display: inline-block;
+    width: 65px;
+    padding-top: 2px;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>color</field_list>
+        <has_preview>false</has_preview>
+        <id>mu-catalog-item-v2</id>
+        <internal>false</internal>
+        <link><![CDATA[function(scope, elem){
+    scope.setFocusToAttachment = function () {
+		setTimeout(function () {
+			var inboxArray = elem.find("a.view-attachment");
+			inboxArray.focus();
+		}, 100);
+	}
+}
+	]]></link>
+        <name>MU Catalog Item v2</name>
+        <option_schema>[{"name":"show_add_cart_button","section":"other","label":"Show Add Cart Button","type":"boolean"},{"hint":"If you turn on this, you will be able to see field validation messages on right side","name":"show_field_validation_messages","default_value":"true","section":"other","label":"Show field validation messages","type":"boolean"},{"hint":"Show Add/Update Wish List buttons","name":"show_add_to_wishlist_button","default_value":"true","section":"other","label":"Show Add/Update Wish List buttons","type":"boolean"},{"hint":"Order item section on top. If you uncheck this, order section will be displayed at bottom of screen","name":"display_cart_on_right","default_value":"true","section":"other","label":"Order Item Section On Top","type":"boolean"},{"hint":"Show item description in few words with an option to read more","name":"show_less_description","default_value":"true","section":"other","label":"Enable Show More/Less for Item description on Mobile","type":"boolean"},{"hint":"Hide the Delivery Time in the widget","name":"hide_delivery_time","section":"other","default_value":"false","label":"Hide Delivery Time","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[// populate the 'data' variable with catalog item, variables, and variable view
+(function() {
+	var embeddedWidgetOptions = ['auto_redirect', 'requested_for_id', 'requested_for_display'];
+	if (input && input.action == 'init_item') {
+		data._generatedItemGUID = gs.generateGUID();
+		return;
+	}
+	else if (input && input.action === "order_one_step") {
+		
+	}
+	else if (input && input.action === "order_item") {
+		//Minimum set of widget options supported for Embedded widget
+		embeddedWidgetOptions.forEach(function (embeddedWidgetOption) {
+			if (typeof input[embeddedWidgetOption] != 'undefined')
+				options[embeddedWidgetOption] = input[embeddedWidgetOption];
+		});
+		data.orderItemModal = $sp.getWidget('widget-modal', {
+			embeddedWidgetId: 'sc-checkout', 
+			embeddedWidgetOptions: {
+				cart: {name: input.cart}, 
+				action: 'order_now', 
+				item: input.itemDetails, 
+																																requested_for: {id:options.requested_for_id, displayValue:options.requested_for_display},
+																																auto_redirect: options.auto_redirect,
+																																parentParams: input.workspaceParams
+			}, 
+			backdrop: 'static', 
+			keyboard: false, 
+			size: 'md'
+		});
+		return;
+	} else if (input && input.action == "order_wishlist_item") {
+		//Minimum set of widget options supported for Embedded widget
+		embeddedWidgetOptions.forEach(function (embeddedWidgetOption) {
+			if (typeof input[embeddedWidgetOption] != 'undefined')
+				options[embeddedWidgetOption] = input[embeddedWidgetOption];
+		});
+		data.orderItemModal = $sp.getWidget('widget-modal', {
+			embeddedWidgetId: 'sc-checkout', 
+			embeddedWidgetOptions: {
+				cart: {name: input.cart}, 
+				action: 'order_now_wishlisted_item', 
+				item: input.itemDetails, 
+																																	requested_for: {id:options.requested_for_id, displayValue:options.requested_for_display},
+																																	auto_redirect: options.auto_redirect,
+																																	parentParams: input.workspaceParams
+			}, 
+			backdrop: 'static', 
+			keyboard: false, 
+			size: 'md'
+		});
+		return;
+	} else if (input && input.action === 'log_request') {
+		 $sp.logStat('Cat Item Request', input.itemDetails.sys_class_name, input.itemDetails.sys_id, input.itemDetails.name);
+		 return;
+	}
+	
+	// portal can specify a catalog and catalog category home page
+	data.sc_catalog_page = $sp.getDisplayValue("sc_catalog_page") || "sc_home";
+	data.sc_category_page = $sp.getDisplayValue("sc_category_page") || "sc_category";
+	data.sc_catalog = $sp.getDisplayValue('sc_catalog');
+	var edit_parm = $sp.getParameter('edit');
+	data.is_cart_item = edit_parm == 'cart';
+	data.is_wishlist_item = edit_parm == 'wishlist';
+	data.show_wishlist_msg = false;
+	data.recordFound = true;
+	var catalogID = $sp.getValue('sc_catalog');
+
+	options.show_add_cart_button = (options.show_add_cart_button == "true");
+
+	var clGenerator = new GlideChoiceList();
+	var choiceListQuantity = clGenerator.getChoiceList("sc_cart_item", "quantity");
+	var choicelistQuantityData = [];
+	for (var i = 0; i < choiceListQuantity.size(); i++) {
+		var choice = choiceListQuantity.get(i);
+		if (!isNaN(choice.getValue()))
+			choicelistQuantityData.push({value : parseInt(choice.getValue()), label : choice.getLabel()});
+	}
+
+	data.choiceListQuantity = choicelistQuantityData;
+	data.quantity = choicelistQuantityData[0].value;
+
+	if (options.page) {
+		var pageGR = new GlideRecord("sp_page");
+		options.page = (pageGR.get(options.page)) ? pageGR.getValue("id") : null;
+	}
+
+	if (options.table) {
+		var tableGR = new GlideRecord("sys_db_object");
+		options.table = (tableGR.get(options.table)) ? tableGR.getValue("name") : null;
+	}
+	options.url = options.url || "id={page}&is_new_order=true&table={table}&sys_id={sys_id}";
+	
+
+	data.showPrices = $sp.showCatalogPrices();
+	var m = data.msgs = {};
+	m.submitMsg = gs.getMessage("Submit");
+	m.orderNowMsg = gs.getMessage("Order Now");
+	m.submittedMsg = gs.getMessage("Submitted");
+	m.createdMsg = gs.getMessage("Created");
+	m.trackMsg = gs.getMessage("track using 'Requests' in the header or");
+	m.clickMsg = gs.getMessage("click here to view");
+	m.dialogTitle = gs.getMessage("Delete Attachment");
+	m.dialogMessage = gs.getMessage("Are you sure?");
+	m.dialogOK = gs.getMessage("OK");
+	m.dialogCancel = gs.getMessage("Cancel");
+	
+	m.renameSuccessMsg = gs.getMessage("Attachment renamed successfully");
+	m.deleteSuccessMsg = gs.getMessage("Attachment deleted successfully");
+	m.wishlistMsg = gs.getMessage('Wish List');
+	m.cartMsg = gs.getMessage('Cart');
+	m.itemWishlistMsg = gs.getMessage('This item is already in your Wish List. If you attempt to add this item to your Wish List it will overwrite the existing item.');
+	m.invalidRecordMsg = gs.getMessage('You are either not authorized or record is not valid.');
+	m.wishlistUpdateMsg = gs.getMessage('Your Wish List has been updated.');
+	m.wishlistAddMsg = gs.getMessage('Your item has been added to your Wish List.');
+	m.cartAddMsg = gs.getMessage('Your item has been added to your Cart. To make changes to the items in your cart, click ');
+	m.viewWishListMsg = gs.getMessage('View Wish List');
+	m.viewCartMsg = gs.getMessage('View Cart');
+	m.delete_attachment = gs.getMessage("Delete Attachment?");
+
+	data.maxAttachmentSize = parseInt(gs.getProperty("com.glide.attachment.max_size", 1024));
+	if (isNaN(data.maxAttachmentSize))
+		data.maxAttachmentSize = 24;
+	m.largeAttachmentMsg = gs.getMessage("Attached files must be smaller than {0} - please try again", "" + data.maxAttachmentSize + "MB");
+	
+	var cartName = data.is_cart_item ? 'DEFAULT' : 'saved_items';
+	var cart = new sn_sc.CartJS(cartName);
+
+	data.showWishlist = new sn_sc.Catalog('' + catalogID).isWishlistEnabled();
+
+	if (edit_parm) {
+		var cart_item_id = $sp.getParameter("sys_id");
+		var gr = new GlideRecord("sc_cart_item");
+		if (!gr.get(cart_item_id) || gr.cart != cart.getCartID()) {
+			data.recordFound = false;
+			return;
+		}
+		var catItemData = {};
+		catItemData.sys_id = gr.getValue('cat_item');
+		catItemData.cart_item_id = gr.getUniqueValue();
+		catItemData.table = "sc_cart_item";
+		catItemData.is_ordering = true;
+
+		data.sc_cat_item = $sp.getCatalogItem(catItemData);
+		data.sc_cat_item.isCartItem = true;
+		data.sc_cat_item.cart_guide = gr.getValue('order_guide');
+		var values = getValues(cart_item_id);
+
+		for(var f in data.sc_cat_item._fields) {
+			// Put the values into the cat item fields
+			var field = data.sc_cat_item._fields[f];
+			if (typeof values[f] != "undefined" && typeof values[f].value != "undefined") {
+				if (values[f].type == 9 || values[f].type == 10)
+					field.value = values[f].displayValue;
+				else if (values[f].type == 25)
+					field.value = values[f].decrypted_value;
+				else
+					field.value = values[f].value;
+				field.displayValue = values[f].displayValue;
+				field.display_value_list = values[f].display_value_list;
+			}
+			updatePriceOnField(field);
+				
+		}
+		data._generatedItemGUID = cart_item_id;
+		data.quantity = '' + gr.quantity;
+	} else {
+	
+		if (input)
+			data.sys_id = input.sys_id;
+		else if (options.sys_id)
+			data.sys_id = options.sys_id;
+		else
+			data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter('sl_sys_id');
+	
+		if (!data.sys_id) {
+			data.recordFound = false;
+			return;
+		}
+	
+		data._generatedItemGUID = gs.generateGUID();
+		var validatedItem = new sn_sc.CatItem('' + data.sys_id);
+		if (!validatedItem.canView() || !validatedItem.isVisibleServicePortal()) {
+			data.recordFound = false;
+			return;
+		}
+	
+		data.sc_cat_item = $sp.getCatalogItem(data.sys_id, true);
+		data.hideDeliveryTime = (options.hide_delivery_time == "true" || data.sc_cat_item.sys_class_name == 'sc_cat_item_producer' || data.sc_cat_item.sys_class_name == 'sc_cat_item_guide' || data.sc_cat_item.sys_class_name == 'std_change_record_producer');
+		if (data.sc_cat_item.category) {
+			var categoryJS;
+			var categoryID = validatedItem.getFirstAccessibleCategoryForSearch(catalogID);
+			if ($sp.getParameter("sysparm_category")) {
+				categoryJS = new sn_sc.CatCategory($sp.getParameter("sysparm_category") + "");
+				categoryID = $sp.getParameter("sysparm_category") + "";
+			}
+			else {
+				categoryJS = new sn_sc.CatCategory(categoryID);
+			}
+			
+			data.category = {
+				name: categoryJS.getTitle(),
+				url: categoryJS.canView() ? '?id=' + data.sc_category_page + '&sys_id=' + categoryID : "#"
+			}
+			data.categories = [];
+			if (categoryJS && GlideStringUtil.isEligibleSysID(categoryJS.getID()))
+				data.categories.push({
+					label: categoryJS.getTitle(),
+					url: categoryJS.canView() ? '?id=' + data.sc_category_page + '&sys_id=' + categoryID : "#"
+				});
+			while(categoryJS && categoryJS.getParent()) {
+				var parentId =  categoryJS.getParent();
+				categoryJS = new sn_sc.CatCategory(parentId);
+				var category = {
+					label: categoryJS.getTitle(),
+					url: categoryJS.canView() ? '?id=' + data.sc_category_page + '&sys_id=' + parentId : "#"
+				};
+				data.categories.unshift(category);
+			}
+		}
+		var gr = new GlideRecord('sc_cart_item');
+		gr.addQuery('cart', cart.getCartID());
+		gr.addQuery('cat_item', data.sys_id);
+		gr.query();
+		if (gr.next() && !options.isServiceWorkspace)
+			data.show_wishlist_msg = true;
+	}
+
+	data.sys_properties = {
+		twostep: gs.getProperty("glide.sc.sp.twostep", "true") == 'true'
+	};
+
+	var athTblName = 'sc_cart_item';
+	var className = data.sc_cat_item.sys_class_name;
+	if (!new global.CatalogItemTypeProcessor().canCreateNormalCartItem(className)) {
+		if (className == 'sc_cat_item_producer' || className == 'std_change_record_producer') {
+				var gr = new GlideRecord(className);
+				gr.get(data.sc_cat_item.sys_id);
+				if (gr.isValidRecord())
+					athTblName = gr.getValue('table_name');
+		}
+	}
+	data._attachmentTable = athTblName;
+
+	data.stdChg = {};
+	if (className === 'std_change_record_producer') {
+		//Populate scope with the porperty for two step
+		data.stdChg.twoStep = false;
+		var twoStepProp = new global.StdChangeUtils().getValue('two_step') + '';
+		if (twoStepProp)
+			data.stdChg.twoStep = twoStepProp === '1';
+
+		var stdChgProducerGr = new GlideRecord('std_change_record_producer');
+		stdChgProducerGr.get(data.sc_cat_item.sys_id);
+		if (stdChgProducerGr.isValidRecord())
+			data.stdChg.currentVersion = stdChgProducerGr.getValue('current_version');
+	}
+	
+	$sp.logStat('Cat Item View', data.sc_cat_item.sys_class_name, data.sc_cat_item.sys_id, data.sc_cat_item.name);
+	
+	function getValues(sys_id) {
+		var qs = new sn_sc.VariablePoolQuestionSetJS();
+		qs.setCartID(sys_id);
+		qs.load();
+		var values = {};
+		var questions = qs.getFlatQuestions();
+		for (var i = 0; i < questions.length; i++) {
+			var qKey = questions[i].name;
+			if (typeof qKey == 'undefined' || qKey == '')
+				qKey = "IO:" + questions[i].sys_id;
+			values[qKey] = questions[i];
+		}
+		return values;
+	}
+
+	function setPrice(field, p, rp) {
+		if (p != undefined)
+			field.price = p;
+		if (rp != undefined)
+			field.recurring_price = rp;
+	}
+
+	function updatePriceForReferenceTable(field) {
+		var tableName = field.refTable + '';
+		if (tableName != undefined && tableName != null && tableName != '') {
+			var gr = new GlideRecord(tableName);
+			if (gr.isValid()) {
+				if (gr.get(field.value) && gr.isValidRecord()) {
+					updatePrice(gr, field);
+					updateRecurringPrice(gr, field);
+				}
+			}
+		}
+	}
+
+	function updatePriceForListCollector(field) {
+		var tableName = field.refTable + '';
+		if (tableName != undefined && tableName != null && tableName != '') {
+			var gr = new GlideRecord(tableName);
+			if (gr.isValid()) {
+				var values = field.value.split(',');
+				gr.addQuery('sys_id', values);
+				gr.query();
+				var p = 0.0;
+				var rp = 0.0;
+				var price_value_list = [];
+				while(gr.next()) {
+						var price_field = {};
+						updatePrice(gr, price_field);
+						updateRecurringPrice(gr, price_field);
+						if (price_field.price)
+							p += Number(price_field.price);
+						else
+							price_field.price = 0.0;
+						if (price_field.recurring_price)
+							rp += Number(price_field.recurring_price);
+						else
+							price_field.recurring_price = 0.0;
+						price_value_list.push(price_field);
+				}
+				field.price = p;
+				field.recurring_price = rp;
+				field.price_value_list = price_value_list;
+			}
+		}
+	}
+
+	function updatePrice(gr, field) {
+		if (gr.isValidField('price'))
+			field.price = gr.getValue('price');
+		else if (gr.isValidField('u_price'))
+			field.price = gr.getValue('u_price');
+	}
+
+	function updateRecurringPrice(gr, field) {
+		if (gr.isValidField('recurring_price'))
+			field.recurring_price = gr.getValue('recurring_price');
+		else if (gr.isValidField('u_recurring_price'))
+			field.recurring_price = gr.getValue('u_recurring_price');
+	}
+
+	function updatePriceOnField(field) {
+		if (field.type == 'boolean' || field.type == 'boolean_confirm') {
+			if (field.value == 'true' || field.value == true)
+				setPrice(field, field._pricing.price_if_checked, field._pricing.recurring_price_if_checked);
+			else
+				setPrice(field, 0, 0);
+		} else if (field.choices) {
+			field.choices.forEach( function(choice) {
+				if (choice.value +'' == field.value + '')
+					 setPrice(field, choice.price, choice.recurring_price);
+			});
+		} else if (field._pricing && field._pricing.pricing_implications === true) {
+			if (field.type == 'reference') 
+				updatePriceForReferenceTable(field);
+			else if (field.type == 'glide_list')
+				updatePriceForListCollector(field);
+		}
+	}
+})()]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
+        <sys_created_on>2018-11-21 19:27:22</sys_created_on>
+        <sys_id>758774a34f71a300eb79aa95d310c72a</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>MU Catalog Item v2</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_widget_758774a34f71a300eb79aa95d310c72a</sys_update_name>
+        <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
+        <sys_updated_on>2018-11-21 19:34:46</sys_updated_on>
+        <template><![CDATA[<div id="sc_cat_item" ng-if="::data.recordFound">
+  <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
+  <div class="row" ng-if="::data.sc_cat_item" >
+    <div class="col-sm-12" ng-class="{true: 'col-md-9', false: 'col-md-12'}[options.display_cart_on_right === 'true']" id="catItemTop">
+      <!-- Info Message Box -->
+      <div ng-if="data.show_wishlist_msg" class="alert alert-info">
+        	{{::m.itemWishlistMsg}}
+      </div>
+      <!--	Success Message Box	-->
+      <div class="alert alert-success" ng-if="data.showMsg" sc-bind-html-compile="m.actionMsg">
+      </div>
+     <div class="panel panel-default">
+        <!-- Title Section -->
+        <div class="wrapper-md b-b break-word item-header" ng-class="{true: '', false: 'sc-sticky-item-header'}[!c.data.sc_cat_item.short_description]" style="top: {{stickyHeaderTop}}">
+        	<h1 class="h2 m-t-none m-b-sm font-thin" ng-if="::data.sc_cat_item.name">{{::data.sc_cat_item.name}}</h1>
+        	<div class="text-muted sc-cat-item-short-description" ng-if="::data.sc_cat_item.short_description">{{::data.sc_cat_item.short_description}}</div>
+      	</div>
+        <div class="wrapper-md row b-b no-margin" ng-if="c.data.sc_cat_item.picture || c.data.sc_cat_item.description">
+          <div class="col-sm-4 col-xs-12 no-padder" ng-if="c.data.sc_cat_item.picture">
+            <div class="wrapper-md text-center">
+              <i class="fa fa-chevron-left pointer" style="position:absolute; top:50%; left:4%; color:#CECECE" ng-if="options.image_gallery"></i>
+              <img class="img-responsive catalog-item-image" alt="{{::data.sc_cat_item.name}}" style="display: inline" ng-src="{{::data.sc_cat_item.picture}}?t=medium" />
+              <i class="fa fa-chevron-right pointer" style="position:absolute; top:50%; right:4%; color:#CECECE" ng-if="options.image_gallery"></i>
+              <div class="image-gallery padding-top" ng-if="options.image_gallery">
+                <i class="fa fa-circle active"></i>
+                <i class="fa fa-circle"></i>
+                <i class="fa fa-circle"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 padder-md break-word"
+               ng-class="{true: 'col-sm-12 no-padder', false: 'col-sm-8'}[!c.data.sc_cat_item.picture]">
+            <div class="visible-md visible-lg" ng-class="{false : 'visible-xs visible-sm', true : 'hidden-xs hidden-sm'}[c.options.show_less_description === 'true']">
+              <div ng-bind-html="::data.sc_cat_item.description"></div>
+            </div>
+            <div class="col-xs-12 col-sm-12 visible-xs visible-sm" ng-if="c.options.show_less_description === 'true'">
+              <sc-toggle-data sn-data="::data.sc_cat_item.description"></sc-toggle-data>
+        		</div>
+          </div>
+        </div>
+        <div class="" ng-class="{'b-b wrapper-md': !data.no_fields}">
+          <sp-cat-item item="::data.sc_cat_item" ></sp-cat-item>
+          <form>
+            <!-- display view and model -->
+            <sp-model form-model="::data.sc_cat_item" mandatory="c.mandatory"></sp-model>
+          </form>
+        </div>
+        <!-- Bottom cart -->
+        <div class="inline-cart" ng-if="::options.display_cart_on_right !== 'true'">
+          <div ng-if="data.sc_cat_item.sys_class_name != 'sc_cat_item_content'" class="wrapper-md b-b">
+              <div class="m-b text-right" ng-if="data.showPrices && (data.sc_cat_item.price || data.sc_cat_item.recurring_price)" >
+               <b>${Price}:</b> {{data.sc_cat_item.price}}<em ng-if="data.sc_cat_item.recurring_price" class="cat_item_price"> + {{data.sc_cat_item.recurring_price + ' ' + data.sc_cat_item.recurring_price_frequency}}</em>
+              </div>
+              <div class="m-b text-right" ng-if="!data.hideDeliveryTime && data.sc_cat_item.estimated_delivery_time">
+                <b>${Delivery Time}:</b> {{::data.sc_cat_item.estimated_delivery_time}}
+            	</div>
+              <div ng-if="::c.allowOrder()" class="text-right">
+                <select ng-if="c.showQuantitySelector()"
+                        ng-disabled="submitting || submitted"
+                            class="m-r-xs sn-select-basic inline"
+                        ng-model="c.quantity"
+                         		sn-select-width="65px"
+                            aria-label="${Quantity}">
+                   <option ng-repeat="num in data.choiceListQuantity" value={{::num.value}}>{{::num.label}}</option>
+                </select>
+                <button tabindex="0" ng-if="c.showAddCartBtn()" name="add_to_cart" ng-disabled="submitting || submitted" ng-click="triggerAddToCart()" class="btn btn-default m-r-xs">
+                  <i class="fa fa fa-shopping-cart m-r-xs"></i>
+                  ${Add to Cart}
+                </button>
+                <button tabindex="0" ng-if="data.is_cart_item" name="update" ng-disabled="submitting || submitted" ng-click="triggerUpdateCart()" class="btn btn-default">
+                  <i class="fa fa fa-shopping-cart m-r-xs"></i>
+                  ${Update Cart}
+                </button>
+                <span class="form-group relative" ng-if="c.showAddToWishlist()">
+                  <button ng-if="!data.is_wishlist_item" name="add_to_wishlist" ng-click="addToWishlist()" ng-disabled="submitting || submitted" class="btn btn-default m-r-xs">
+                    <i class="icon icon-sp-wishlist m-r-xs" style="vertical-align: text-bottom;"></i>
+                    ${Add to Wish List}
+                  </button>
+                  <button ng-if="data.is_wishlist_item" name="update_wishlist" ng-click="addToWishlist()" ng-disabled="submitting || submitted" class="btn btn-default m-r-xs">
+                    <i class="icon icon-sp-wishlist m-r-xs" style="vertical-align: text-bottom;"></i>
+                    ${Update Wish List}
+                  </button>
+                </span>
+								<button ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="submitting || submitted" ng-click="triggerOnSubmit()" class="btn btn-primary">{{::submitButtonMsg}}</button>
+                <span ng-if="submitting" style="padding-left:4px">${Submitting...}</span>
+              </div>
+              <div ng-show="hasMandatory(c.mandatory)" class="alert alert-info" style="margin-top: .5em" ng-if="c.options.show_field_validation_messages === 'true'">
+                <span ng-if="hasMandatory(mandatory)">${Required information} </span>
+                <label ng-repeat="f in c.mandatory" for="sp_formfield_{{::f.catalogFieldName}}" class="label label-danger sc-field-error-label" style="margin-right: .5em; display: inline-block;">{{::f.label}}</label>
+              </div>
+            </div>
+        </div>
+        <div ng-if="c.showAttachments()" class="wrapper-md row no-margin">
+          <now-attachments-list template="sp_attachment_single_line" ></now-attachments-list>
+          <label ng-if="!submitting && !submitted" style="float:right;font-weight:normal;cursor:pointer;">
+            <sp-attachment-button></sp-attachment-button>
+            <span style="padding-left:4px;">${Add attachments}</span>
+          </label>
+          
+          <!-- CUSTOM CODE -->
+          
+          
+        </div>
+      </div>
+      <div ng-if="::data.sc_cat_item.content_type == 'external'" class="wrapper-md">
+        <a ng-href="{{::data.sc_cat_item.url}}" target={{::data.sc_cat_item.target}}>{{::data.sc_cat_item.url}} ➚</a>
+      </div>
+			<div ng-if="::data.sc_cat_item.content_type == 'kb'" class="wrapper-md">
+        <a  ng-href="?id=kb_article&sys_id={{::data.sc_cat_item.kb_article}}">${Go to KB Article:} {{::data.sc_cat_item.kb_article_description}}</a>
+      </div>
+    </div>
+    <!-- Right side content -->
+    <div class="col-sm-12 col-md-3 right-side-cart" ng-show="::options.display_cart_on_right === 'true'">
+      <!-- Right side cart( If you are chaning anything here, please change in bottom cart section also) -->
+      <div ng-class="{true:'sc-fixed', false:'' }[options.display_cart_on_right === 'true']">
+      	<div ng-if="data.sc_cat_item.sys_class_name != 'sc_cat_item_content'" class="panel panel-{{::options.color}} b wrapper-md">
+           <div ng-if="::c.allowOrder()">
+             <select ng-if="c.showQuantitySelector()"
+                     ng-disabled="submitting || submitted"
+                        class="m-b sn-select-basic"
+                     ng-model="c.quantity"
+                        aria-label="${Quantity}">
+               <option ng-repeat="num in data.choiceListQuantity" value={{::num.value}}>{{::num.label}}</option>
+             </select>
+           </div>
+           <div class="form-group relative">
+             <button tabindex="0" ng-if="c.showAddCartBtn()" name="add_to_cart" ng-disabled="submitting || submitted" ng-click="triggerAddToCart()" class="btn btn-default sc-btn form-control">
+               <i class="fa fa fa-shopping-cart sc-order-widget-btn pull-left"></i>
+               ${Add to Cart}
+             </button>
+             <button tabindex="0" ng-if="data.is_cart_item" name="update" ng-disabled="submitting || submitted" ng-click="triggerUpdateCart()" class="btn btn-default sc-btn form-control">
+               <i class="fa fa fa-shopping-cart sc-order-widget-btn pull-left"></i>
+               ${Update Cart}
+             </button>
+           </div>
+           <div class="form-group relative" ng-if="data.showWishlist && !data.is_cart_item && c.options.show_add_to_wishlist_button === 'true'">
+             <button ng-if="!data.is_wishlist_item" name="add_to_wishlist" ng-click="addToWishlist()" ng-disabled="submitting || submitted" class="btn btn-default sc-btn form-control">
+               <i class="icon icon-sp-wishlist sc-order-widget-btn pull-left" style="top:5px"></i>
+               ${Add to Wish List}
+             </button>
+             <button ng-if="data.is_wishlist_item" name="update_wishlist" ng-click="addToWishlist()" ng-disabled="submitting || submitted" class="btn btn-default sc-btn form-control">
+             	<i class="icon icon-sp-wishlist sc-order-widget-btn pull-left" style="top:5px"></i>
+             	${Update Wish List}
+             </button>
+           </div>
+           <div class="form-group m-b-xs" ng-if="data.showPrices && (data.sc_cat_item.price || data.sc_cat_item.recurring_price)">
+             <b>${Price}:</b> {{data.sc_cat_item.price}}<em ng-if="data.sc_cat_item.recurring_price" class="cat_item_price"> + {{data.sc_cat_item.recurring_price + ' ' + data.sc_cat_item.recurring_price_frequency}}</em>
+           </div>
+           <div class="form-group" ng-if="!data.hideDeliveryTime && data.sc_cat_item.estimated_delivery_time">
+                <b>${Delivery Time}:</b> {{::data.sc_cat_item.estimated_delivery_time}}
+           </div>
+           <div class="form-group">
+             
+             <!-- CUSTOM CODE -->
+             <button tabindex="0" name="submit" ng-disabled="submitted" ng-click="cancelTrigger()" class="btn btn-primary">${Cancel}</button>
+             <!-- END OF CUSTOM CODE -->
+             
+             <button ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="submitting || submitted" ng-click="triggerOnSubmit()" class="btn btn-primary btn-block">{{::submitButtonMsg}}</button>
+             <span ng-if="submitting" style="padding-left:4px">${Submitting...}</span>
+           </div>
+         </div>
+      	<div class="sc-item-error-messages" ng-if="c.options.show_field_validation_messages === 'true'">
+            <div class="row" ng-if="hasMandatory(c.mandatory)" class=" row alert alert-info" style="margin-top: .5em">
+              <div class="col-sm-12">
+                <div ng-if="hasMandatory(c.mandatory)">${Required information} </div>
+                <label ng-repeat="f in c.mandatory" for="sp_formfield_{{::f.name}}" class="label label-danger sc-field-error-label">{{::f.label}}</label>
+              </div>
+           </div>
+         </div>
+      </div>
+    </div>
+  </div>
+  <div ng-if="::!data.sc_cat_item" >
+    <div class="panel panel-default">
+      <div class="panel-heading"><h4 class="panel-title">${Item not found}</h4></div>
+      <div class="panel-body wrapper">
+        <p>${This item is not found or currently not available}</p>
+        <p>${Suggestions}:</p>
+        <ul>
+          <li>${Try searching for the item}</li>
+          <li>${Go to the Service Catalog homepage}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="sr-only" aria-live="assertive">{{::c.status}}</div>
+</div>
+<div ng-if="::!data.recordFound" class="alert alert-info">{{::m.invalidRecordMsg}}</div>
+<now-message key="Added item to shopping cart" value="${Added item to shopping cart}"/>]]></template>
+    </sp_widget>
+</record_update>

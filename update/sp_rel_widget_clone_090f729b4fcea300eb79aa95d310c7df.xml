@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_rel_widget_clone">
+    <sp_rel_widget_clone action="INSERT_OR_UPDATE">
+        <child display_value="Meetup Search">050f729b4fcea300eb79aa95d310c7dd</child>
+        <cloned>2018-12-03 20:56:32</cloned>
+        <last_validated>2018-12-03 20:56:32</last_validated>
+        <parent display_value="knowledge Homepage Search">04ec050ddb53220099f93691f0b8f538</parent>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;sp_widget&gt;&lt;category/&gt;&lt;client_script&gt;&lt;![CDATA[function() {
+
+	var c = this;
+	c.options.glyph = c.options.glyph || 'search';
+	c.options.title = c.options.title || "${Welcome to Knowledge}";
+	c.keyword = "";
+
+	$( "#kb_home_search_form").submit(function( event ) {
+		if((!c.data.allow_empty_search &amp;&amp; c.keyword == "") || (c.keyword &amp;&amp; c.keyword.length &lt; c.data.min_search_char)){
+			event.preventDefault();
+			return false;
+		}
+	});
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.cm-main-search {
+  color: #FFF;
+
+  .cm-welcome-msg {
+    padding-top : 45px;
+    h1 {
+      font-weight: 300;
+      text-align: center;
+      margin-top: 0px;
+      margin-bottom: 15px;
+    }
+  }
+
+  .cm-search-box{
+    margin-left: auto;
+    margin-right: auto;
+
+    .banner-search{
+      width: 100%;
+
+      input{
+        height: 45px;
+        padding-left: 45px;
+      }
+      .icon {
+        position: absolute;
+        z-index: 100;
+        font-size: 22px;
+        padding: 13px 14px;
+        color: #CFD4D8;
+      }
+    }
+  }
+
+  .cm-community-summary {
+    text-align: center;
+    .summary {
+      font-size: 18px;
+      display: inline-block;
+      text-align: center;
+      padding: 20px 30px;
+      margin-top:4px;
+    }
+  }
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list&gt;title,glyph,css&lt;/field_list&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;kb-homepage-search&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function(scope,element,attr){
+	function openedInIframe () {
+		try {
+			return window.self !== window.top;
+		} catch (e) {
+			return true;
+		}
+	}
+	
+	if(openedInIframe())
+		$("header nav").css("display","none");
+		
+	if(scope.data.set_foccus)
+		setTimeout(function(){
+			element.find('input[name=query]').focus();
+		},0);
+}]]&gt;&lt;/link&gt;&lt;name&gt;knowledge Homepage Search&lt;/name&gt;&lt;option_schema&gt;[{"hint":"Placeholder text for search","name":"placeholder","default_value":"","label":"Search Placeholder","type":"string"},{"hint":"Allow search with empty or blank string in search box (Default to system property : glide.knowman.allow_empty_search)","name":"allow_empty_search","default_value":"Use system property","label":"Allow Empty Search","type":"choice","choices":[{"label":"Yes","value":"Yes"},{"label":"No","value":"No"},{"label":"Use system property","value":"Use system property"}]},{"hint":"Minimum number of characters for search (Default to system property : glide.knowman.search_character_limit)","name":"min_search_char","label":"Minimum Number of Characters for Search","type":"string"}]&lt;/option_schema&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	data.instanceid = $sp.getDisplayValue("sys_id");
+
+	//options will be given precedence if value exit
+	data.set_foccus = gs.getProperty('glide.knowman.portal_search_focus') == 'true' || false;
+	data.min_search_char = parseInt(options.min_search_char || gs.getProperty('glide.knowman.search_character_limit') || 3);
+	data.allow_empty_search = options.allow_empty_search ? (options.allow_empty_search == 'Use system property' ?  gs.getProperty('glide.knowman.allow_empty_search') == 'true' : options.allow_empty_search == 'Yes') : gs.getProperty('glide.knowman.allow_empty_search') == 'true' || false;
+	options.placeholder = options.placeholder || gs.getMessage('Search (minimum {0} characters)',data.min_search_char+'');
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;true&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2016-11-23 07:25:24&lt;/sys_created_on&gt;&lt;sys_id&gt;04ec050ddb53220099f93691f0b8f538&lt;/sys_id&gt;&lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;&lt;sys_name&gt;knowledge Homepage Search&lt;/sys_name&gt;&lt;sys_package display_value="Knowledge Management - Service Portal" source="sn_km_portal"&gt;bab6dea3db20320099f93691f0b8f590&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Knowledge Management - Service Portal"&gt;bab6dea3db20320099f93691f0b8f590&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_04ec050ddb53220099f93691f0b8f538&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-03-11 13:24:24&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="kb-banner-{{c.data.instanceid}}"&gt;
+  &lt;div class="cm-main-search"&gt;
+    &lt;div class="cm-welcome-msg hidden-sm hidden-xs"&gt;
+      &lt;h1&gt;
+        {{::options.title}}
+      &lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;div class="cm-search-box"&gt;
+      &lt;div class="banner-search"&gt;
+        &lt;i ng-if="::c.options.glyph" class="icon fa fa-{{::c.options.glyph}}" aria-hidden="true"&gt;&lt;/i&gt;
+        &lt;form id="kb_home_search_form" method="get" action="?" class="ng-pristine ng-valid" role="form" _lpchecked="1"&gt;
+          &lt;input name="id" value="kb_search" type="hidden"/&gt;
+          &lt;input name="query" ng-model="c.keyword" type="text" aria-label="${Enter text and press enter}" placeholder="{{::options.placeholder}}" class="form-control"&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="cm-community-summary hidden-sm hidden-xs"&gt;
+      &lt;h2 class="summary"&gt;{{$root.kb_count}} ${Knowledge Bases}&lt;/h2&gt;
+      &lt;h2 class="summary"&gt;{{$root.articles_count}} ${Articles}&lt;/h2&gt;
+      &lt;h2 class="summary"&gt;{{$root.socialqa_count}} ${Q&amp;amp;A}&lt;/h2&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;style&gt;
+  .kb-banner-{{c.data.instanceid}} .cm-main-search {
+    height: 225px;
+  }
+  .kb-banner-{{c.data.instanceid}} .cm-search-box{
+    width: 55%;
+  }
+  @media screen and (max-width: 992px){
+    .kb-banner-{{c.data.instanceid}} .cm-main-search{
+      height: inherit;
+      margin:0 -25px;
+    }
+    .kb-banner-{{c.data.instanceid}} .cm-search-box{
+      width:100%;
+      padding:20px;
+    }
+  }
+  @media screen and (max-width: 640px){
+    .kb-banner-{{c.data.instanceid}} .cm-main-search{
+      margin:0 -15px;
+    }
+  }
+&lt;/style&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;</payload>
+        <sys_class_name>sp_rel_widget_clone</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-12-03 20:56:32</sys_created_on>
+        <sys_id>090f729b4fcea300eb79aa95d310c7df</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>050f729b4fcea300eb79aa95d310c7dd</sys_name>
+        <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
+        <sys_update_name>sp_rel_widget_clone_090f729b4fcea300eb79aa95d310c7df</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-12-03 20:56:32</sys_updated_on>
+    </sp_rel_widget_clone>
+</record_update>

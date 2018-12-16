@@ -9,33 +9,33 @@
         <hint/>
         <homepage/>
         <image/>
-        <link_type>LIST</link_type>
+        <link_type>DIRECT</link_type>
         <map_page/>
-        <mobile_title>Contents</mobile_title>
+        <mobile_title>Content Portal</mobile_title>
         <mobile_view_name>Mobile</mobile_view_name>
-        <name>x_steas_meetup_con_content</name>
-        <order>20</order>
+        <name/>
+        <order>1</order>
         <override_menu_roles>false</override_menu_roles>
-        <query/>
+        <query>/sp?id=meetup_content_landing&amp;sl_sys_id=47cab6d74fdd6300eb79aa95d310c743&amp;sl_table=x_snc_dev_meet_group&amp;spa=1#5137153cc611227c000bbd1bd8cd2005</query>
         <report/>
-        <roles>x_steas_meetup_con.content_user</roles>
+        <roles/>
         <sys_class_name>sys_app_module</sys_class_name>
-        <sys_created_by>christian.ring@soprasteria.com</sys_created_by>
-        <sys_created_on>2018-09-27 20:12:39</sys_created_on>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-12-04 10:33:35</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>3072b139dbf06b80b45b7cfeaf9619f4</sys_id>
-        <sys_mod_count>2</sys_mod_count>
-        <sys_name>Content</sys_name>
+        <sys_id>e9b9b5274f022300eb79aa95d310c755</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Content Portal</sys_name>
         <sys_overrides/>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
-        <sys_update_name>sys_app_module_3072b139dbf06b80b45b7cfeaf9619f4</sys_update_name>
+        <sys_update_name>sys_app_module_e9b9b5274f022300eb79aa95d310c755</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2018-12-04 10:41:05</sys_updated_on>
+        <sys_updated_on>2018-12-04 10:33:35</sys_updated_on>
         <timeline_page/>
-        <title>Content</title>
+        <title>Content Portal</title>
         <uncancelable>false</uncancelable>
         <view_name/>
         <window_name/>

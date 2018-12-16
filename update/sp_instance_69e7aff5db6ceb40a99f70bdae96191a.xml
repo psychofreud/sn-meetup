@@ -10,7 +10,7 @@
         <roles/>
         <short_description/>
         <size>md</size>
-        <sp_column display_value="2">ecc64fa8db28e740a99f70bdae961971</sp_column>
+        <sp_column display_value="1">ecc64fa8db28e740a99f70bdae961971</sp_column>
         <sp_widget display_value="Create Content">f47b9735db2ceb40a99f70bdae9619ca</sp_widget>
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>

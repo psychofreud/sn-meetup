@@ -4,6 +4,8 @@
         <client_script><![CDATA[function($scope, $rootScope, $timeout, spUtil) {
   /* widget controller */
   var c = this;
+	var isLoaded = false;
+	
 	c.optionSelected = function() {
 		var dt = c.options.broadcast_name;
 		console.log('dt: ' + JSON.stringify(c.options.e_widget));
@@ -16,6 +18,16 @@
 			$rootScope.$broadcast('mu_icon_trigger', data);
 		},500);
 	};
+	
+	
+	
+	
+	$scope.onLoadHandler = function() {
+		if(!isLoaded && c.options.on_load == 'true') {
+			c.optionSelected();
+			isLoaded = true;
+		}
+	}
 	
 }]]></client_script>
         <controller_as>c</controller_as>
@@ -207,7 +219,7 @@ a:hover {
         <internal>false</internal>
         <link/>
         <name>MU Icon Link</name>
-        <option_schema>[{"name":"link_template","section":"Presentation","label":"Template","type":"choice","choices":[{"label":"Top Icon","value":"Top Icon"},{"label":"Circle Icon","value":"Circle Icon"},{"label":"Color Box","value":"Color Box"}]},{"hint":"broadcast name used to identify the broadcast sender","name":"broadcast_name","section":"other","label":"Broadcast Name","type":"string"},{"name":"e_widget","section":"Data","label":"Widget Data","type":"string"}]</option_schema>
+        <option_schema>[{"name":"link_template","section":"Presentation","label":"Template","type":"choice","choices":[{"label":"Top Icon","value":"Top Icon"},{"label":"Circle Icon","value":"Circle Icon"},{"label":"Color Box","value":"Color Box"}]},{"hint":"broadcast name used to identify the broadcast sender","name":"broadcast_name","section":"other","label":"Broadcast Name","type":"string"},{"name":"e_widget","section":"Data","label":"Widget Data","type":"string"},{"name":"on_load","section":"other","default_value":"false","label":"Broadcast onLoad","type":"boolean"}]</option_schema>
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
@@ -220,14 +232,14 @@ a:hover {
         <sys_created_by>bahonur.nasritdinov@soprasteria.com</sys_created_by>
         <sys_created_on>2018-09-03 14:04:28</sys_created_on>
         <sys_id>2108f48edb98af00a99f70bdae9619ff</sys_id>
-        <sys_mod_count>108</sys_mod_count>
+        <sys_mod_count>123</sys_mod_count>
         <sys_name>MU Icon Link</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
         <sys_update_name>sp_widget_2108f48edb98af00a99f70bdae9619ff</sys_update_name>
         <sys_updated_by>bahonur.nasritdinov@soprasteria.com</sys_updated_by>
-        <sys_updated_on>2018-10-30 12:39:31</sys_updated_on>
+        <sys_updated_on>2018-11-22 10:48:46</sys_updated_on>
         <template><![CDATA[<!--div class="iconlink">
   
   <a ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" class="top_icon {{::options.class_name}}" ng-click="c.optionSelected()">
@@ -254,7 +266,7 @@ a:hover {
   </a>
 </div -->
 
-<div class="panel panel-default forum-tile">
+<div class="panel panel-default forum-tile" ng-init="onLoadHandler()">
   <a class="csm-link-inverse" ng-click="c.optionSelected()">
     <div class="link-image">
       <span class="fa fa-{{::options.glyph}} fa-4x"></span>

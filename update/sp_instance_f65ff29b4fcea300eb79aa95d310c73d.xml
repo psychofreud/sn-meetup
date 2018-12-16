@@ -10,20 +10,20 @@
         <roles/>
         <short_description/>
         <size>md</size>
-        <sp_column display_value="2">72ee42944f6d6300eb79aa95d310c7e0</sp_column>
-        <sp_widget display_value="knowledge Homepage Search">04ec050ddb53220099f93691f0b8f538</sp_widget>
+        <sp_column display_value="1">cd5d361b4fcea300eb79aa95d310c7ad</sp_column>
+        <sp_widget display_value="Meetup Search">050f729b4fcea300eb79aa95d310c7dd</sp_widget>
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2018-11-05 18:05:59</sys_created_on>
-        <sys_id>e17b82964fe1e700eb79aa95d310c7a5</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_created_on>2018-12-03 20:58:01</sys_created_on>
+        <sys_id>f65ff29b4fcea300eb79aa95d310c73d</sys_id>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>Welcome to content sharing for Meetups</sys_name>
         <sys_package display_value="Meetup Content Sharing" source="x_steas_meetup_con">342b1cd24ff31340999cfdb28110c787</sys_package>
         <sys_policy/>
         <sys_scope display_value="Meetup Content Sharing">342b1cd24ff31340999cfdb28110c787</sys_scope>
-        <sys_update_name>sp_instance_e17b82964fe1e700eb79aa95d310c7a5</sys_update_name>
+        <sys_update_name>sp_instance_f65ff29b4fcea300eb79aa95d310c73d</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2018-11-05 18:07:28</sys_updated_on>
+        <sys_updated_on>2018-12-03 20:58:31</sys_updated_on>
         <title>Welcome to content sharing for Meetups</title>
         <url/>
         <widget_parameters><![CDATA[{
@@ -41,5 +41,5 @@
 	}
 }]]></widget_parameters>
     </sp_instance>
-    <sys_translated_text action="delete_multiple" query="documentkey=e17b82964fe1e700eb79aa95d310c7a5"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=f65ff29b4fcea300eb79aa95d310c73d"/>
 </record_update>
